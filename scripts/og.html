@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<style>
+  @page { margin: 0; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, sans-serif;
+    background: #f6f2ec;
+    color: #14121a;
+    position: relative;
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    align-items: center;
+    gap: 40px;
+    padding: 0 72px;
+  }
+  .blob { position: absolute; border-radius: 50%; filter: blur(90px); }
+  .b1 { width: 620px; height: 620px; left: -190px; top: -240px; background: rgba(20,184,168,.40); }
+  .b2 { width: 520px; height: 520px; right: -140px; bottom: -220px; background: rgba(255,122,89,.34); }
+  .b3 { width: 420px; height: 420px; left: 42%; top: -160px; background: rgba(124,108,240,.26); }
+  .grain {
+    position: absolute; inset: 0; opacity: .3; mix-blend-mode: soft-light;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+  }
+  .copy { position: relative; z-index: 2; }
+  .brand { display: flex; align-items: center; gap: 14px; margin-bottom: 34px; }
+  .brand strong { font-size: 26px; letter-spacing: -.02em; display: block; }
+  .brand span { font-size: 13px; letter-spacing: .16em; text-transform: uppercase; color: #8b849c; font-weight: 600; }
+  h1 {
+    font-size: 74px; line-height: 1.02; letter-spacing: -.04em; font-weight: 700; max-width: 12ch;
+  }
+  h1 em {
+    font-family: ui-serif, "New York", Georgia, serif; font-style: italic; font-weight: 500;
+    background: linear-gradient(100deg, #0a6e6a, #14b8a8 45%, #ff7a59);
+    -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .sub { margin-top: 26px; font-size: 23px; color: #56506a; letter-spacing: -.01em; }
+  .row { display: flex; gap: 10px; margin-top: 30px; }
+  .pill {
+    font-size: 15px; font-weight: 650; letter-spacing: -.01em;
+    padding: 10px 16px; border-radius: 999px;
+    background: rgba(255,255,255,.62); border: 1px solid rgba(255,255,255,.8);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 10px 24px -18px rgba(30,20,60,.6);
+    color: #3a3450;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #14b8a8; }
+  .visual { position: relative; z-index: 2; display: grid; place-items: center; }
+  .card {
+    width: 372px; padding: 14px; border-radius: 34px;
+    background: linear-gradient(158deg, rgba(255,255,255,.86), rgba(255,255,255,.5) 48%, rgba(255,255,255,.66));
+    border: 1px solid rgba(255,255,255,.85);
+    box-shadow: 0 40px 90px -46px rgba(28,20,60,.55), inset 0 1px 0 rgba(255,255,255,.95);
+    transform: rotate(-2deg);
+  }
+  .bar { display: flex; gap: 6px; padding: 4px 6px 12px; }
+  .bar i { width: 10px; height: 10px; border-radius: 50%; }
+  .bar i:nth-child(1) { background: #ff5f57; } .bar i:nth-child(2) { background: #febc2e; } .bar i:nth-child(3) { background: #28c840; }
+  .inner { border-radius: 24px; overflow: hidden; background: rgba(255,255,255,.4); border: 1px solid rgba(24,18,44,.08); }
+  .info { padding: 18px 20px 20px; }
+  .kicker { font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #0e9488; }
+  .info h3 { font-size: 25px; letter-spacing: -.025em; margin: 6px 0 3px; }
+  .info p { font-size: 15px; color: #8b849c; }
+  .foot { display: flex; align-items: center; justify-content: space-between; margin-top: 16px; padding-top: 14px; border-top: 1px solid rgba(24,18,44,.1); }
+  .foot strong { font-size: 21px; letter-spacing: -.02em; }
+  .badge { font-size: 12px; font-weight: 700; color: #0a6e6a; background: rgba(20,184,168,.15); padding: 7px 11px; border-radius: 999px; display: inline-flex; gap: 6px; align-items: center; }
+</style>
+</head>
+<body>
+  <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span><span class="grain"></span>
+
+  <div class="copy">
+    <div class="brand">
+      <svg width="58" height="58" viewBox="0 0 40 40" aria-hidden="true">
+        <defs>
+          <linearGradient id="lm" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#37E0CE"/><stop offset=".55" stop-color="#12A79A"/><stop offset="1" stop-color="#0A6E6A"/></linearGradient>
+          <linearGradient id="lh" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".55"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
+        </defs>
+        <rect width="40" height="40" rx="12.5" fill="url(#lm)"/><rect width="40" height="40" rx="12.5" fill="url(#lh)"/>
+        <path d="M7.5 26.5c4.6-6.4 8.9-6.4 13 0 4 6.3 8.2 6.3 12 0" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+        <circle cx="27.5" cy="12.6" r="3.5" fill="#FFE9A8"/>
+      </svg>
+      <div><strong>Dewa Bali Tour</strong><span>Bali · since 2014</span></div>
+    </div>
+    <h1>Private tours in <em>Bali</em>, without the crowds.</h1>
+    <p class="sub">Ubud · Nusa Penida · Mount Batur · Uluwatu</p>
+    <div class="row">
+      <span class="pill"><span class="dot"></span>Licensed local guides</span>
+      <span class="pill">4.9 / 5 · 2,300+ reviews</span>
+    </div>
+  </div>
+
+  <div class="visual">
+    <div class="card">
+      <div class="bar"><i></i><i></i><i></i></div>
+      <div class="inner">
+        <svg viewBox="0 0 400 190" width="100%" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+          <defs>
+            <linearGradient id="sky" x1="0" y1="0" x2=".2" y2="1"><stop offset="0" stop-color="#FFB8A2"/><stop offset=".55" stop-color="#C57BA9"/><stop offset="1" stop-color="#473777"/></linearGradient>
+            <radialGradient id="sun" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FFE2B4"/><stop offset="1" stop-color="#FFE2B4" stop-opacity="0"/></radialGradient>
+            <linearGradient id="veil" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".25"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient>
+          </defs>
+          <rect width="400" height="190" fill="url(#sky)"/>
+          <circle cx="300" cy="58" r="70" fill="url(#sun)"/><circle cx="300" cy="58" r="20" fill="#FFEFC9"/>
+          <path d="M0 150c50-8 92 2 132 10s92 6 136-4 84-8 84-8H0Z" fill="#181029"/>
+          <g fill="#221A39">
+            <path d="M138 62h56l10 22h-76Z"/><path d="M130 84h72l8 20h-88Z"/><path d="M124 104h84v60h-84Z"/>
+            <path d="M250 88h34l7 16h-48Z"/><path d="M244 104h46l6 14h-58Z"/><path d="M240 118h54v46h-54Z"/>
+          </g>
+          <rect width="400" height="190" fill="url(#veil)"/>
+        </svg>
+        <div class="info">
+          <div class="kicker">Trip plan</div>
+          <h3>Ubud &amp; Nusa Penida</h3>
+          <p>4 days · 2 adults</p>
+          <div class="foot">
+            <strong>IDR 2,450,000</strong>
+            <span class="badge"><span class="dot"></span>Confirmed in 1 hour</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

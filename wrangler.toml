@@ -1,0 +1,20 @@
+# Konfigurasi Cloudflare Pages + D1.
+# Ganti database_id setelah membuat database D1 (lihat README §7).
+
+name = "dewabalitour"
+compatibility_date = "2025-01-01"
+pages_build_output_dir = "dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "dewabalitour"
+database_id = "GANTI_DENGAN_ID_DATABASE_D1"
+# Penyimpanan foto hasil unggah admin (opsional, aktifkan unggah foto).
+# Buat dulu: npx wrangler r2 bucket create dewabalitour-media
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "dewabalitour-media"
+
+# Secret yang disarankan (set di dashboard → Settings → Environment variables):
+#   SESSION_SECRET, ADMIN_EMAIL, RESEND_API_KEY, MAIL_FROM
+#   (opsional) ADMIN_USER, ADMIN_PASSWORD_HASH, ADMIN_RESET
