@@ -18,5 +18,3 @@ bucket_name = "dewabalitour-media"
 # Secret yang disarankan (set di dashboard → Settings → Environment variables):
 #   SESSION_SECRET, ADMIN_EMAIL, RESEND_API_KEY, MAIL_FROM
 #   (opsional) ADMIN_USER, ADMIN_PASSWORD_HASH, ADMIN_RESET
-[assets]
-directory = "./dist"
