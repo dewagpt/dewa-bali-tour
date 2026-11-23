@@ -10,11 +10,11 @@
      node scripts/hash-password.mjs "kata-sandi-baru"
    ============================================================ */
 
-export const DEFAULT_ADMIN_USER = "dewa-200280-bali";
+export const DEFAULT_ADMIN_USER = "";
 
-/* PBKDF2-SHA256, 20.000 iterasi, salt acak — hash dari "dewa-200280-bali" */
+/* PBKDF2-SHA256, 20.000 iterasi, salt acak — hash dari "" */
 export const DEFAULT_PASSWORD_HASH =
-  "pbkdf2$20000$Er9QDR5g39CC3pfN3CFgkQ$Vi98HClODq-1h23m0OgUym376Z51IyI2awziDSwL9AM";
+  "";
 
 /* Hanya untuk pengembangan lokal (http://localhost). */
 export const DEV_SESSION_SECRET = "dev-secret-dewa-bali-tour-jangan-dipakai-di-produksi";
