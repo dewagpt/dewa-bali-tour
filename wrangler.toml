@@ -19,6 +19,12 @@ database_id = "d3a1d96e-1510-488f-b66d-266c5165b63b"
 binding = "BUCKET"
 bucket_name = "dewabalitour-media"
 
+# Terjemahan otomatis: admin cukup mengedit teks bahasa Indonesia,
+# versi en/de/fr/es/ru dibuat oleh Workers AI. Tanpa binding ini,
+# panel admin kembali ke mode isi manual (tidak error).
+[ai]
+binding = "AI"
+
 # Secret yang disarankan (set di dashboard → Settings → Environment variables):
 #   SESSION_SECRET, ADMIN_EMAIL, RESEND_API_KEY, MAIL_FROM
 #   (opsional) ADMIN_USER, ADMIN_PASSWORD_HASH, ADMIN_RESET

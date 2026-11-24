@@ -325,6 +325,39 @@ async function removeItem(kind, item) {
 }
 
 /* ---------------- editor ---------------- */
+
+/** Baca isi satu panel bahasa dari form editor. */
+function readPane(pane, kind) {
+  const lines = (name) => {
+    const el = pane.querySelector(`[name="${name}"]`);
+    if (!el) return [];
+    return el.value
+      .split("\n")
+      .map((x) => x.trim())
+      .filter(Boolean);
+  };
+  return {
+    name: pane.querySelector('[name="name"]').value.trim(),
+    tagline: pane.querySelector('[name="tagline"]').value.trim(),
+    includes: lines("includes"),
+    description: pane.querySelector('[name="description"]').value.trim(),
+    ...(kind === "tours" ? { itinerary: lines("itinerary") } : {}),
+  };
+}
+
+/** Tulis hasil terjemahan ke panel bahasa tujuan. */
+function writePane(pane, data, kind) {
+  const set = (name, value) => {
+    const el = pane.querySelector(`[name="${name}"]`);
+    if (el) el.value = value || "";
+  };
+  set("name", data.name);
+  set("tagline", data.tagline);
+  set("description", data.description);
+  set("includes", (data.includes || []).join("\n"));
+  if (kind === "tours") set("itinerary", (data.itinerary || []).join("\n"));
+}
+
 function langPane(lang, data, kind) {
   const c = data?.t?.[lang.code] || {};
   const includeText = (c.includes || []).join("\n");
@@ -437,7 +470,7 @@ function openEditor(kind, item) {
 
   editorBody.innerHTML = `
     <h2>${isNew ? "Tambah" : "Edit"} ${isTour ? "paket tour" : "kendaraan"}</h2>
-    <p class="hint">Perubahan langsung tersimpan ke situs. Isi teks untuk keenam bahasa.</p>
+    <p class="hint">Perubahan langsung tersimpan ke situs. Cukup isi teks bahasa Indonesia — bahasa lain diterjemahkan otomatis (bisa dirapikan manual).</p>
     <form id="entity-form" novalidate>
       <div class="field-grid">
         <label class="field"><span>ID (slug)</span>
@@ -508,6 +541,16 @@ function openEditor(kind, item) {
             `<button type="button" class="lang-tab ${i === 0 ? "is-active" : ""}" data-lang="${l.code}">${l.short}</button>`
         ).join("")}
       </div>
+      <div class="translate-bar">
+        <button type="button" class="btn btn-glass btn-sm" data-translate>
+          Terjemahkan otomatis dari bahasa Indonesia
+        </button>
+        <label class="translate-auto">
+          <input type="checkbox" data-auto-translate checked>
+          <span>Otomatis saat Simpan</span>
+        </label>
+        <span class="translate-note" data-translate-note hidden></span>
+      </div>
       ${LANGS.map((l) => langPane(l, base, kind)).join("")}
 
       <p class="editor-error" id="editor-error" hidden></p>
@@ -535,6 +578,73 @@ function wireEditor(kind, item) {
   );
 
   form.querySelector("[data-close]").addEventListener("click", () => editor.close());
+
+  /* Tombol terjemahan: ambil teks Indonesia, kirim ke server,
+     lalu isi otomatis panel en/de/fr/es/ru. */
+  const translateBtn = form.querySelector("[data-translate]");
+  const translateNote = form.querySelector("[data-translate-note]");
+  if (translateBtn) {
+    translateBtn.addEventListener("click", async () => {
+      const source = readPane(form.querySelector('[data-lang-pane="id"]'), kind);
+
+      if (!source.name || !source.tagline || !source.includes.length) {
+        if (translateNote) {
+          translateNote.hidden = false;
+          translateNote.textContent = "Isi dulu Nama, Deskripsi singkat, dan Sudah termasuk di tab ID.";
+        }
+        return;
+      }
+
+      const others = LANGS.filter((l) => l.code !== "id");
+      const filled = others.filter((l) => {
+        const p = readPane(form.querySelector(`[data-lang-pane="${l.code}"]`), kind);
+        return Boolean(p.name || p.tagline);
+      });
+
+      if (filled.length) {
+        const ok = confirm(
+          `${filled.length} bahasa sudah berisi teks.\n\n` +
+            "Terjemahkan ulang dan TIMPA semuanya dengan hasil mesin?\n\n" +
+            "Pilih Batal kalau versi terjemahan lama masih mau dipertahankan."
+        );
+        if (!ok) return;
+      }
+
+      const label = translateBtn.textContent;
+      translateBtn.disabled = true;
+      translateBtn.textContent = "Menerjemahkan…";
+      if (translateNote) {
+        translateNote.hidden = false;
+        translateNote.textContent = "Menghubungi mesin terjemahan. Bisa 20–60 detik.";
+      }
+
+      try {
+        const res = await api("/admin/translate", {
+          method: "POST",
+          body: { kind: kind === "tours" ? "tour" : "rental", source },
+        });
+        for (const l of others) {
+          const data = res.translations && res.translations[l.code];
+          if (!data) continue;
+          writePane(form.querySelector(`[data-lang-pane="${l.code}"]`), data, kind);
+        }
+        if (translateNote) {
+          translateNote.textContent =
+            "Selesai. Periksa tiap tab, lalu klik Simpan. Terjemahan mesin tetap perlu dibaca manusia.";
+        }
+        toast("Terjemahan terisi — cek lalu Simpan");
+      } catch (err) {
+        if (translateNote) {
+          translateNote.textContent = err.message;
+        } else {
+          toast(err.message);
+        }
+      } finally {
+        translateBtn.disabled = false;
+        translateBtn.textContent = label;
+      }
+    });
+  }
 
   const photoInput = form.querySelector('input[name="photo"]');
   const preview = form.querySelector(".upload-preview");
@@ -598,21 +708,46 @@ function wireEditor(kind, item) {
     const fd = new FormData(form);
     const t = {};
     for (const l of LANGS) {
-      const pane = form.querySelector(`[data-lang-pane="${l.code}"]`);
-      const lines = (name) =>
-        pane
-          .querySelector(`[name="${name}"]`)
-          .value.split("\n")
-          .map((x) => x.trim())
-          .filter(Boolean);
+      t[l.code] = readPane(form.querySelector(`[data-lang-pane="${l.code}"]`), kind);
+    }
 
-      t[l.code] = {
-        name: pane.querySelector('[name="name"]').value.trim(),
-        tagline: pane.querySelector('[name="tagline"]').value.trim(),
-        includes: lines("includes"),
-        description: pane.querySelector('[name="description"]').value.trim(),
-        ...(kind === "tours" ? { itinerary: lines("itinerary") } : {}),
-      };
+    const btn = form.querySelector('button[type="submit"]');
+
+    /* Auto-terjemahan: kalau teks Indonesia berubah, buat ulang versi
+       en/de/fr/es/ru supaya admin cuma perlu mengedit satu bahasa. */
+    const autoBox = form.querySelector("[data-auto-translate]");
+    if (autoBox && autoBox.checked) {
+      const before = item?.t?.id || null;
+      const changed =
+        !before ||
+        before.name !== t.id.name ||
+        before.tagline !== t.id.tagline ||
+        (before.description || "") !== t.id.description ||
+        JSON.stringify(before.includes || []) !== JSON.stringify(t.id.includes) ||
+        (kind === "tours" &&
+          JSON.stringify(before.itinerary || []) !== JSON.stringify(t.id.itinerary || []));
+
+      if (changed && t.id.name && t.id.tagline) {
+        btn.disabled = true;
+        btn.textContent = "Menerjemahkan…";
+        try {
+          const res = await api("/admin/translate", {
+            method: "POST",
+            body: { kind: kind === "tours" ? "tour" : "rental", source: t.id },
+          });
+          for (const l of LANGS) {
+            if (l.code === "id") continue;
+            const data = res.translations && res.translations[l.code];
+            if (data) t[l.code] = { ...t[l.code], ...data };
+          }
+        } catch (err) {
+          errorEl.textContent = `Terjemahan otomatis gagal: ${err.message} — perubahan belum disimpan.`;
+          errorEl.hidden = false;
+          btn.disabled = false;
+          btn.textContent = "Simpan";
+          return;
+        }
+      }
     }
 
     const payload = {
@@ -635,8 +770,8 @@ function wireEditor(kind, item) {
       payload.sort = Number(fd.get("sort")) || 0;
     }
 
-    const btn = form.querySelector('button[type="submit"]');
     btn.disabled = true;
+    btn.textContent = "Menyimpan…";
     try {
       if (item) await api(`/admin/${kind}/${encodeURIComponent(item.id)}`, { method: "PUT", body: payload });
       else await api(`/admin/${kind}`, { method: "POST", body: payload });
@@ -648,6 +783,7 @@ function wireEditor(kind, item) {
       errorEl.hidden = false;
     } finally {
       btn.disabled = false;
+      btn.textContent = "Simpan";
     }
   });
 }

@@ -23,6 +23,7 @@ import {
 import { D1Store, ensureData, saveData } from "./store.js";
 import { EXT_BY_TYPE, MEDIA_KEY_RE, R2Media } from "./media.js";
 import { revOfAsync } from "./util.js";
+import { TRANSLATE_SHAPES, TRANSLATE_TARGETS, translateAll } from "./translate.js";
 
 const ART = ["terrace", "island", "volcano", "temple", "river", "gate", "car", "bike"];
 const TOUR_CATS = ["culture", "adventure", "island"];
@@ -631,6 +632,45 @@ export async function handleApi(request, env = {}) {
 
     await media.put(key, file.stream(), type);
     return json({ ok: true, url: `/api/media/${key}`, key, size: file.size }, 201);
+  }
+
+  /* --- terjemahan otomatis (Indonesia → 5 bahasa) --- */
+  if (path === "admin/translate" && method === "POST") {
+    let body;
+    try {
+      body = await readJson(request);
+    } catch {
+      return fail("Permintaan tidak valid.");
+    }
+
+    if (!env.AI) {
+      return json(
+        { error: "Terjemahan otomatis belum aktif. Aktifkan binding AI (lihat README)." },
+        501
+      );
+    }
+
+    const kind = String(body.kind || "tour");
+    if (!TRANSLATE_SHAPES[kind]) return fail("Jenis konten tidak dikenal.");
+
+    const source = body.source && typeof body.source === "object" ? body.source : null;
+    if (!source) return fail("Teks bahasa Indonesia belum diisi.");
+
+    const shape = TRANSLATE_SHAPES[kind];
+    const targets = Array.isArray(body.targets) && body.targets.length
+      ? body.targets.filter((c) => TRANSLATE_TARGETS.includes(c))
+      : TRANSLATE_TARGETS;
+    if (!targets.length) return fail("Tidak ada bahasa tujuan yang valid.");
+
+    try {
+      const translations = await translateAll(env.AI, source, shape, targets);
+      return json({ ok: true, translations });
+    } catch (err) {
+      return json(
+        { error: `Terjemahan gagal: ${err && err.message ? err.message : "tidak diketahui"}` },
+        502
+      );
+    }
   }
 
   if (path === "admin/settings" && method === "PUT") {

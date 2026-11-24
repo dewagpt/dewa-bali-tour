@@ -116,6 +116,12 @@
 }
 .lang-tab.is-active { color: var(--page); background: var(--ink); }
 [data-theme="dark"] .lang-tab.is-active { color: #14111d; background: #fff; }
+
+.translate-bar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin: 0 0 12px; }
+.translate-bar .btn[disabled] { opacity: .6; cursor: progress; }
+.translate-auto { display: inline-flex; align-items: center; gap: 6px; font-size: .74rem; color: var(--ink-2); cursor: pointer; }
+.translate-auto input { width: auto; margin: 0; }
+.translate-note { flex: 1 1 100%; font-size: .72rem; line-height: 1.45; color: var(--ink-3); }
 .lang-pane { display: grid; gap: 10px; }
 .lang-pane[hidden] { display: none; }
 
