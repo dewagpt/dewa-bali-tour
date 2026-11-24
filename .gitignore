@@ -9,3 +9,4 @@ README.md
 .env
 .env.*
 .dev.vars
+wrangler.local.toml
