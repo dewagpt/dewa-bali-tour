@@ -29,11 +29,11 @@ export const seed = {
   "tours": [
     {
       "id": "ubud",
-      "soloPrice": 900000,
+      "soloPrice": 750000,
       "photo": "/assets/img/tours/ubud.jpg",
       "category": "culture",
       "art": "terrace",
-      "price": 650000,
+      "price": 450000,
       "hours": 10,
       "featured": true,
       "t": {
@@ -143,11 +143,11 @@ export const seed = {
     },
     {
       "id": "penida",
-      "soloPrice": 1500000,
+      "soloPrice": 950000,
       "photo": "/assets/img/tours/penida.jpg",
       "category": "island",
       "art": "island",
-      "price": 1250000,
+      "price": 850000,
       "hours": 12,
       "featured": true,
       "t": {
@@ -263,7 +263,7 @@ export const seed = {
     },
     {
       "id": "batur",
-      "soloPrice": 1150000,
+      "soloPrice": 1000000,
       "photo": "/assets/img/tours/batur.jpg",
       "category": "adventure",
       "art": "volcano",
@@ -377,11 +377,11 @@ export const seed = {
     },
     {
       "id": "uluwatu",
-      "soloPrice": 1000000,
+      "soloPrice": 875000,
       "photo": "/assets/img/tours/uluwatu.jpg",
       "category": "culture",
       "art": "temple",
-      "price": 750000,
+      "price": 575000,
       "hours": 9,
       "featured": false,
       "t": {
@@ -605,11 +605,11 @@ export const seed = {
     },
     {
       "id": "east",
-      "soloPrice": 1250000,
+      "soloPrice": 900000,
       "photo": "/assets/img/tours/east.jpg",
       "category": "culture",
       "art": "gate",
-      "price": 950000,
+      "price": 525000,
       "hours": 11,
       "featured": false,
       "t": {
