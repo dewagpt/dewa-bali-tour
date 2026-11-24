@@ -643,7 +643,7 @@ export async function handleApi(request, env = {}) {
       return fail("Permintaan tidak valid.");
     }
 
-    if (!env.AI) {
+    if (!env.AI && !env.__ai) {
       return json(
         { error: "Terjemahan otomatis belum aktif. Aktifkan binding AI (lihat README)." },
         501
@@ -663,7 +663,7 @@ export async function handleApi(request, env = {}) {
     if (!targets.length) return fail("Tidak ada bahasa tujuan yang valid.");
 
     try {
-      const translations = await translateAll(env.AI, source, shape, targets);
+      const translations = await translateAll(env.AI || env.__ai, source, shape, targets);
       return json({ ok: true, translations });
     } catch (err) {
       return json(
