@@ -223,6 +223,24 @@
   const form = $("#book-form");
   if (form) {
     const body = document.body;
+    /* Tanggal dari <input type="date"> berformat ISO (2026-12-05). Di pesan
+       WhatsApp itu terlihat seperti kode, bukan tanggal. Ubah ke format
+       bahasa halaman ini, contoh: "5 Des 2026" / "Dec 5, 2026".
+       Kalau parsing gagal, pakai nilai aslinya — jangan sampai pesan kosong. */
+    const LOCALES = { id: "id-ID", en: "en-GB", de: "de-DE", fr: "fr-FR", es: "es-ES", ru: "ru-RU" };
+    const fmtDate = (iso) => {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(iso || ""));
+      if (!m) return iso;
+      const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
+      if (isNaN(d)) return iso;
+      try {
+        return d.toLocaleDateString(LOCALES[body.dataset.lang] || "en-GB", {
+          day: "numeric", month: "short", year: "numeric",
+        });
+      } catch (e) {
+        return iso;
+      }
+    };
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const data = new FormData(form);
@@ -236,7 +254,7 @@
       const lines = [
         `${body.dataset.waHi} ${body.dataset.waWant} ${get("tour")}.`,
         "",
-        `${body.dataset.waFor} ${get("guests") || 2} ${body.dataset.waPpl} — ${body.dataset.waDate} ${get("date")}.`,
+        `${body.dataset.waFor} ${get("guests") || 2} ${body.dataset.waPpl} — ${body.dataset.waDate} ${fmtDate(get("date"))}.`,
         `${body.dataset.waName} ${get("name")}.`,
         `${body.dataset.waWa || "WhatsApp"}: ${get("wa")}`,
       ];
