@@ -8,12 +8,12 @@ pages_build_output_dir = "dist"
 [[d1_databases]]
 binding = "DB"
 database_name = "dewabalitour"
-database_id = "d3a1d96e-1510-488f-b66d-266c5165b63b"
+database_id = ""
 # Penyimpanan foto hasil unggah admin (opsional, aktifkan unggah foto).
 # Buat dulu: npx wrangler r2 bucket create dewabalitour-media
 [[r2_buckets]]
 binding = "BUCKET"
-bucket_name = "dewabalitour-media"
+bucket_name = ""
 
 # Secret yang disarankan (set di dashboard → Settings → Environment variables):
 #   SESSION_SECRET, ADMIN_EMAIL, RESEND_API_KEY, MAIL_FROM
