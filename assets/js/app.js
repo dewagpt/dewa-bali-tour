@@ -233,10 +233,17 @@
       if (!m) return iso;
       const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
       if (isNaN(d)) return iso;
+      const lang = body.dataset.lang || "en";
       try {
-        return d.toLocaleDateString(LOCALES[body.dataset.lang] || "en-GB", {
-          day: "numeric", month: "short", year: "numeric",
+        let out = d.toLocaleDateString(LOCALES[lang] || "en-GB", {
+          day: "numeric",
+          month: lang === "ru" ? "long" : "short",
+          year: "numeric",
         });
+        /* Intl bahasa Rusia menambahkan "г." di akhir ("5 декабря 2026 г.").
+           Kalimatnya sudah diberi titik di template, jadi buang dulu supaya
+           tidak jadi "г.." di pesan WhatsApp. */
+        return out.replace(/\s*г\.\s*$/u, "").replace(/[.\s]+$/, "");
       } catch (e) {
         return iso;
       }
