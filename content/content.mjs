@@ -302,7 +302,7 @@ export const durationForms = {
 export const copy = {
   id: {
     "meta.title": "Dewa Bali Tour — Private Tour & Pengalaman Kurasi di Bali",
-    "meta.desc": "Private tour Bali bersama pemandu lokal berlisensi. Ubud, Nusa Penida, Batur, Uluwatu dan banyak lagi — harga transparan, jemput hotel, dukungan 24/7.",
+    "meta.desc": "Private tour Bali bersama pemandu lokal berlisensi. Ubud, Nusa Penida, Batur, Uluwatu dan banyak lagi — harga transparan, jemput hotel, balasan cepat.",
     "nav.tours": "Paket Tour", "nav.why": "Kenapa Kami", "nav.reviews": "Ulasan",
     "nav.faq": "FAQ", "nav.contact": "Kontak", "nav.book": "Booking WhatsApp", "nav.lang": "Bahasa",
     "hero.eyebrow": "Private tour di Bali · mulai 21 Nov 2026",
@@ -420,7 +420,7 @@ export const copy = {
 
   en: {
     "meta.title": "Dewa Bali Tour — Private Tours & Curated Experiences in Bali",
-    "meta.desc": "Private Bali tours with licensed local guides. Ubud, Nusa Penida, Mount Batur, Uluwatu and more — transparent pricing, hotel pickup, 24/7 support.",
+    "meta.desc": "Private Bali tours with licensed local guides. Ubud, Nusa Penida, Mount Batur, Uluwatu and more — transparent pricing, hotel pickup, quick WhatsApp replies.",
     "nav.tours": "Tours", "nav.why": "Why us", "nav.reviews": "Reviews",
     "nav.faq": "FAQ", "nav.contact": "Contact", "nav.book": "Book on WhatsApp", "nav.lang": "Language",
     "hero.eyebrow": "Private tours in Bali · from 21 Nov 2026",
@@ -537,7 +537,7 @@ export const copy = {
 
   de: {
     "meta.title": "Dewa Bali Tour — Private Touren & kuratierte Erlebnisse auf Bali",
-    "meta.desc": "Private Bali-Touren mit lizenzierten lokalen Guides. Ubud, Nusa Penida, Batur, Uluwatu und mehr — transparente Preise, Hotelabholung, 24/7-Support.",
+    "meta.desc": "Private Bali-Touren mit lizenzierten lokalen Guides. Ubud, Nusa Penida, Batur, Uluwatu und mehr — transparente Preise, Hotelabholung, schnelle Antwort.",
     "nav.tours": "Touren", "nav.why": "Warum wir", "nav.reviews": "Bewertungen",
     "nav.faq": "FAQ", "nav.contact": "Kontakt", "nav.book": "Über WhatsApp buchen", "nav.lang": "Sprache",
     "hero.eyebrow": "Private Touren auf Bali · ab 21. Nov. 2026",
@@ -654,7 +654,7 @@ export const copy = {
 
   fr: {
     "meta.title": "Dewa Bali Tour — Circuits privés & expériences sur mesure à Bali",
-    "meta.desc": "Circuits privés à Bali avec guides locaux agréés. Ubud, Nusa Penida, Batur, Uluwatu et plus — tarifs transparents, prise en charge à l'hôtel, assistance 24/7.",
+    "meta.desc": "Circuits privés à Bali avec guides locaux agréés. Ubud, Nusa Penida, Batur, Uluwatu et plus — tarifs transparents, prise en charge à l'hôtel, réponse rapide.",
     "nav.tours": "Circuits", "nav.why": "Pourquoi nous", "nav.reviews": "Avis",
     "nav.faq": "FAQ", "nav.contact": "Contact", "nav.book": "Réserver sur WhatsApp", "nav.lang": "Langue",
     "hero.eyebrow": "Circuits privés à Bali · dès le 21 nov. 2026",
@@ -771,7 +771,7 @@ export const copy = {
 
   es: {
     "meta.title": "Dewa Bali Tour — Tours privados y experiencias a medida en Bali",
-    "meta.desc": "Tours privados en Bali con guías locales titulados. Ubud, Nusa Penida, Batur, Uluwatu y más — precios transparentes, recogida en hotel, atención 24/7.",
+    "meta.desc": "Tours privados en Bali con guías locales titulados. Ubud, Nusa Penida, Batur, Uluwatu y más — precios transparentes, recogida en hotel, respuesta rápida.",
     "nav.tours": "Tours", "nav.why": "Por qué nosotros", "nav.reviews": "Opiniones",
     "nav.faq": "Preguntas", "nav.contact": "Contacto", "nav.book": "Reservar por WhatsApp", "nav.lang": "Idioma",
     "hero.eyebrow": "Tours privados en Bali · desde el 21 nov. 2026",
@@ -888,7 +888,7 @@ export const copy = {
 
   ru: {
     "meta.title": "Dewa Bali Tour — приватные туры и авторские маршруты на Бали",
-    "meta.desc": "Приватные туры по Бали с лицензированными местными гидами. Убуд, Нуса-Пенида, Батур, Улувату и другие — прозрачные цены, трансфер из отеля, поддержка 24/7.",
+    "meta.desc": "Приватные туры по Бали с лицензированными местными гидами. Убуд, Нуса-Пенида, Батур, Улувату и другие — прозрачные цены, трансфер из отеля, быстрый ответ.",
     "nav.tours": "Туры", "nav.why": "Почему мы", "nav.reviews": "Отзывы",
     "nav.faq": "Вопросы", "nav.contact": "Контакты", "nav.book": "Забронировать в WhatsApp", "nav.lang": "Язык",
     "hero.eyebrow": "Приватные туры на Бали · с 21 ноября 2026",
