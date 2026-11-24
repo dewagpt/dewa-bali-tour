@@ -728,7 +728,6 @@ function renderSettings() {
         </label>
         <label class="field"><span>Instagram</span><input name="instagram" type="url" value="${esc(s.instagram || "")}"></label>
         <label class="field"><span>Facebook</span><input name="facebook" type="url" value="${esc(s.facebook || "")}"></label>
-        <label class="field field-full"><span>Tripadvisor</span><input name="tripadvisor" type="url" value="${esc(s.tripadvisor || "")}"></label>
       </div>
 
       <h3 class="settings-sub">Foto hero (bagian paling atas halaman)</h3>
@@ -773,7 +772,6 @@ function renderSettings() {
       email: String(fd.get("email") || ""),
       instagram: String(fd.get("instagram") || ""),
       facebook: String(fd.get("facebook") || ""),
-      tripadvisor: String(fd.get("tripadvisor") || ""),
       heroPhoto: String(fd.get("heroPhoto") || "").trim(),
       rentalHeroPhoto: String(fd.get("rentalHeroPhoto") || "").trim(),
       address,

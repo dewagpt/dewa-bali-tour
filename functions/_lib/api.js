@@ -216,7 +216,6 @@ function validateSettings(input) {
       hours,
       instagram: String(input.instagram || "").trim(),
       facebook: String(input.facebook || "").trim(),
-      tripadvisor: String(input.tripadvisor || "").trim(),
       heroPhoto: safeImageUrl(input.heroPhoto),
       rentalHeroPhoto: safeImageUrl(input.rentalHeroPhoto),
     },
@@ -239,7 +238,6 @@ async function publicPayload(data, lang) {
     hours: typeof hrs === "string" ? hrs : hrs?.[L] || hrs?.id || "",
     instagram: data.settings.instagram,
     facebook: data.settings.facebook,
-    tripadvisor: data.settings.tripadvisor,
     heroPhoto: data.settings.heroPhoto || "",
     rentalHeroPhoto: data.settings.rentalHeroPhoto || "",
   };

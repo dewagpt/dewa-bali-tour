@@ -5,12 +5,12 @@ export const seed = {
     "phoneDisplay": "+62 878 6093 2801",
     "email": "admin@dewabalitour.com",
     "address": {
-      "id": "Jl. Gunung Agung No. 18, Denpasar, Bali 80116",
-      "en": "Jl. Gunung Agung No. 18, Denpasar, Bali 80116",
-      "de": "Jl. Gunung Agung No. 18, Denpasar, Bali 80116",
-      "fr": "Jl. Gunung Agung No. 18, Denpasar, Bali 80116",
-      "es": "Jl. Gunung Agung No. 18, Denpasar, Bali 80116",
-      "ru": "Jl. Gunung Agung No. 18, Denpasar, Bali 80116"
+      "id": "Jl. Gunung Agung Gang F No. 18, Denpasar, Bali 80116",
+      "en": "Jl. Gunung Agung Gang F No. 18, Denpasar, Bali 80116",
+      "de": "Jl. Gunung Agung Gang F No. 18, Denpasar, Bali 80116",
+      "fr": "Jl. Gunung Agung Gang F No. 18, Denpasar, Bali 80116",
+      "es": "Jl. Gunung Agung Gang F No. 18, Denpasar, Bali 80116",
+      "ru": "Jl. Gunung Agung Gang F No. 18, Denpasar, Bali 80116"
     },
     "hours": {
       "id": "Setiap hari · 07.00–21.00 WITA",
@@ -22,7 +22,6 @@ export const seed = {
     },
     "instagram": "https://instagram.com/dewabalitour",
     "facebook": "https://facebook.com/dewabalitour",
-    "tripadvisor": "https://www.tripadvisor.com/",
     "heroPhoto": "",
     "rentalHeroPhoto": ""
   },

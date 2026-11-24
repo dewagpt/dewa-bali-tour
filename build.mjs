@@ -53,7 +53,6 @@ const settingsSeed = () => ({
   hours: Object.fromEntries(langs.map((l) => [l.code, copy[l.code]["contact.hours"]])),
   instagram: site.instagram,
   facebook: site.facebook,
-  tripadvisor: site.tripadvisor,
   heroPhoto: site.heroPhoto || "",
   rentalHeroPhoto: site.rentalHeroPhoto || "",
 });
@@ -135,8 +134,31 @@ const REVIEWS = Number(site.reviewCount) || 0;
 const reviewsOn = RATING > 0 && REVIEWS > 0;
 const TESTIMONIALS = Array.isArray(testimonials) ? testimonials.filter((x) => x && x.quote) : [];
 const SHOW_REVIEWS = site.reviewsShow !== false && TESTIMONIALS.length > 0;
-const FOUNDED = Number(site.founded) || 2014;
-const SINCE = `Bali · since ${FOUNDED}`;
+
+/* ---------- tanggal mulai operasi ----------
+   Dewa Bali Tour adalah bisnis BARU (manajemen baru, mulai 21 Nov 2026).
+   Karena itu situs tidak boleh menyebut tahun pengalaman atau "sejak 2014".
+   Satu-satunya tanggal yang ditampilkan adalah site.startDate, dan hanya
+   sebagai keterangan "mulai beroperasi" — bukan klaim pengalaman. */
+const START = (() => {
+  const raw = String(site.startDate || "").trim();
+  if (!raw) return null;
+  const d = new Date(`${raw}T00:00:00Z`);
+  return Number.isNaN(d.getTime()) ? null : d;
+})();
+const LOCALES = { id: "id-ID", en: "en-GB", de: "de-DE", fr: "fr-FR", es: "es-ES", ru: "ru-RU" };
+const SINCE_PREFIX = { id: "mulai", en: "from", de: "ab", fr: "dès le", es: "desde el", ru: "с" };
+const startLabel = (lang) => {
+  if (!START) return "";
+  return new Intl.DateTimeFormat(LOCALES[lang] || "en-GB", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(START);
+};
+const SINCE = (lang) =>
+  START ? `Bali · ${SINCE_PREFIX[lang] || "from"} ${startLabel(lang)}` : "Bali";
 const ratingText = (lang) => {
   const s = RATING.toFixed(1);
   return lang === "en" ? s : s.replace(".", ",");
@@ -321,7 +343,7 @@ function head(lang, meta) {
   const ap = site.addressParts || {};
   /* sameAs: hanya tautan profil yang punya isi. Tautan ke domain induk
      (mis. https://www.tripadvisor.com/) tidak berguna bagi mesin pencari. */
-  const sameAs = [site.instagram, site.facebook, site.tripadvisor].filter((u) =>
+  const sameAs = [site.instagram, site.facebook].filter((u) =>
     /^https?:\/\/[^/]+\/./i.test(String(u || ""))
   );
   const jsonld = {
@@ -402,11 +424,13 @@ ${ICON_LINKS}
 function nav(lang, t, isHome = true) {
   const L = langs.find((l) => l.code === lang);
   const H = (hash) => (isHome ? hash : `/${lang}/${hash}`);
+  /* Seksi #reviews selalu ada (lihat reviewsSection), jadi tautannya juga
+     selalu tampil — tidak boleh bergantung pada ada/tidaknya ulasan asli. */
   const links = [
     [H("#tours"), t("nav.tours")],
     [`/${lang}/rental/`, t("nav.rental")],
     [H("#why"), t("nav.why")],
-    ...(SHOW_REVIEWS ? [[H("#reviews"), t("nav.reviews")]] : []),
+    [H("#reviews"), t("nav.reviews")],
     [H("#faq"), t("nav.faq")],
     [H("#contact"), t("nav.contact")],
   ]
@@ -422,7 +446,7 @@ function nav(lang, t, isHome = true) {
   <div class="nav glass" id="nav">
     <a class="brand" href="${isHome ? "#top" : `/${lang}/`}" aria-label="${esc(site.name)}">
       ${brandMark(38)}
-      <span class="brand-text"><strong>${esc(site.name)}</strong><span>${esc(SINCE)}</span></span>
+      <span class="brand-text"><strong>${esc(site.name)}</strong><span>${esc(SINCE(lang))}</span></span>
     </a>
     <nav class="nav-links" aria-label="Primary">${links}</nav>
     <div class="nav-actions">
@@ -521,16 +545,21 @@ function hero(lang, t) {
 }
 
 function stats(lang, t) {
-  const years = Math.max(1, new Date().getFullYear() - (Number(site.founded) || 2014));
+  /* Hanya fakta yang bisa dibuktikan: tanggal mulai operasi, jumlah paket,
+     dan status 100% private. Tidak ada "tahun pengalaman". */
   const items = [
-    { v: `${years}+`, k: "stats.a" },
+    { v: startLabel(lang) || "2026", k: "stats.a", cls: "stat-date" },
+    { v: `${tours.length}`, k: "stats.b" },
     { v: "100%", k: "stats.d" },
   ];
   if (reviewsOn) items.push({ v: `${ratingText(lang)} / 5`, k: "stats.c" });
   return `<section class="stats" aria-label="Company facts">
     <div class="stats-inner glass" data-n="${items.length}">
       ${items
-        .map((it) => `<div class="stat"><strong>${esc(it.v)}</strong><span>${esc(t(it.k))}</span></div>`)
+        .map(
+          (it) =>
+            `<div class="stat"><strong${it.cls ? ` class="${it.cls}"` : ""}>${esc(it.v)}</strong><span>${esc(t(it.k))}</span></div>`
+        )
         .join("")}
     </div>
   </section>`;
@@ -567,7 +596,7 @@ function toursSection(lang, t) {
               <strong>${esc(money(tr.price, lang))}</strong>
               <span class="price-per">${lang === "id" ? esc(t("tours.per")) : `${esc(t("tours.per"))} · ${usd(tr.price)}`}</span>
             </div>
-            <a class="btn btn-glass btn-sm" href="${wa(bookMsg)}" target="_blank" rel="noopener" data-book data-book-kind="tour" data-book-name="${attr(c.name)}" data-book-price="${tr.price}" data-book-meta="${attr(durationForms[lang](tr.hours))}" data-book-desc="${attr(c.description || "")}" data-book-itin="${attr((c.itinerary || []).join("|"))}" data-book-solo="${tr.soloPrice || 0}" data-book-photo="${attr(tr.photo || "")}">${I.wa}<span>${esc(t("tours.book"))}</span></a>
+            <a class="btn btn-glass btn-sm" href="${wa(bookMsg)}" target="_blank" rel="noopener">${I.wa}<span>${esc(t("tours.book"))}</span></a>
           </div>
         </div>
       </article>`;
@@ -652,30 +681,56 @@ function stepsSection(lang, t) {
 }
 
 function reviewsSection(lang, t) {
-  if (!SHOW_REVIEWS) return "";
-  return `<section class="section" id="reviews">
+  /* Seksi ini SELALU dirender. Selama belum ada ulasan asli, isinya jujur:
+     mengakui belum ada ulasan (bukan mengarang bintang/angka), lalu
+     mengajak tamu pertama chat WhatsApp. Kalau nanti testimonials diisi
+     data nyata, grid ulasan asli yang tampil. */
+  if (SHOW_REVIEWS) {
+    return `<section class="section" id="reviews">
   <div class="wrap">
     <header class="sec-head" data-reveal>
       <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("reviews.eyebrow"))}</span>
       <h2 class="display-2">${esc(t("reviews.title"))}</h2>
-      ${reviewsOn ? `<p class="sec-sub">${esc(t("reviews.sub"))}</p>` : ""}
+      <p class="sec-sub">${esc(t("reviews.sub"))}</p>
     </header>
-    <div class="review-grid" data-n="${Math.min(3, TESTIMONIALS.length)}">
+    <div class="review-grid" data-n="${Math.min(3, TESTIMONIALS.length)}" data-reveal>
       ${TESTIMONIALS.slice(0, 3)
-        .map((r, i) => {
+        .map((r, idx) => {
           const stars = Math.max(0, Math.min(5, Math.round(Number(r.rating) || 0)));
           const initials = initialsOf(r.name);
           return `<figure class="card review glass" data-reveal>
             ${stars ? `<div class="stars stars-lg">${Array.from({ length: stars }, () => I.star).join("")}</div>` : ""}
             <blockquote>“${esc(r.quote)}”</blockquote>
             <figcaption>
-              <span class="avatar a${i + 1}" aria-hidden="true">${esc(initials)}</span>
+              <span class="avatar a${idx + 1}" aria-hidden="true">${esc(initials)}</span>
               <span class="who"><strong>${esc(r.name || "")}</strong><span>${esc(r.origin || "")}</span></span>
               ${r.tour ? `<span class="pill-tour">${esc(r.tour)}</span>` : ""}
             </figcaption>
           </figure>`;
         })
         .join("")}
+    </div>
+  </div>
+</section>`;
+  }
+  return `<section class="section" id="reviews">
+  <div class="wrap">
+    <header class="sec-head" data-reveal>
+      <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("reviews.eyebrow"))}</span>
+      <h2 class="display-2">${esc(t("reviews.title"))}</h2>
+      <p class="sec-sub">${esc(t("reviews.sub"))}</p>
+    </header>
+    <div class="first-guest glass" data-reveal>
+      <div class="first-guest-copy">
+        <p>${esc(t("reviews.empty"))}</p>
+        <a class="btn btn-primary" href="${wa(t("wa.hi") + " " + t("reviews.cta"))}" target="_blank" rel="noopener">${I.wa}<span>${esc(t("reviews.cta"))}</span></a>
+      </div>
+      <ul class="first-guest-facts">
+        <li>${I.shield}<span>${esc(t("trust.2"))}</span></li>
+        <li>${I.pin}<span>${esc(t("trust.1"))}</span></li>
+        <li>${I.clock}<span>${esc(t("trust.3"))}</span></li>
+        <li>${I.chat}<span>${esc(t("trust.4"))}</span></li>
+      </ul>
     </div>
   </div>
 </section>`;
@@ -743,12 +798,11 @@ function contactSection(lang, t) {
         <div class="info-social">
           <a href="${site.instagram}" target="_blank" rel="noopener">Instagram</a>
           <a href="${site.facebook}" target="_blank" rel="noopener">Facebook</a>
-          <a href="${site.tripadvisor}" target="_blank" rel="noopener">Tripadvisor</a>
         </div>
       </aside>
       <form class="card form glass" id="book-form" data-reveal novalidate>
         <div class="field-row">
-          <label class="field"><span>${esc(t("contact.name"))}</span><input name="name" type="text" autocomplete="name" required placeholder="Sarah Mitchell"></label>
+          <label class="field"><span>${esc(t("contact.name"))}</span><input name="name" type="text" autocomplete="name" required placeholder="${attr(t("contact.namePh"))}"></label>
           <label class="field"><span>${esc(t("contact.wa"))}</span><input name="wa" type="tel" autocomplete="tel" required placeholder="+62 812 3456 7890"></label>
         </div>
         <div class="field-row">
@@ -770,7 +824,7 @@ function footer(lang, t) {
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-brand">
-        <a class="brand" href="#top">${brandMark(36)}<span class="brand-text"><strong>${esc(site.name)}</strong><span>${esc(SINCE)}</span></span></a>
+        <a class="brand" href="#top">${brandMark(36)}<span class="brand-text"><strong>${esc(site.name)}</strong><span>${esc(SINCE(lang))}</span></span></a>
         <p>${esc(t("footer.tagline"))}</p>
         <div class="foot-social">
           <a href="${site.instagram}" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
@@ -782,7 +836,7 @@ function footer(lang, t) {
         <h4>${esc(t("footer.explore"))}</h4>
         <a href="#tours">${esc(t("nav.tours"))}</a>
         <a href="#why">${esc(t("nav.why"))}</a>
-        ${SHOW_REVIEWS ? `<a href="#reviews">${esc(t("nav.reviews"))}</a>` : ""}
+        <a href="#reviews">${esc(t("nav.reviews"))}</a>
         <a href="#faq">${esc(t("nav.faq"))}</a>
       </nav>
       <nav class="foot-col" aria-label="${esc(t("footer.company"))}">
@@ -841,7 +895,6 @@ ${nav(lang, t)}
   ${ctaSection(lang, t)}
   ${contactSection(lang, t)}
   ${templates(lang, t)}
-  ${bookingDialog(lang, t)}
 </main>
 ${footer(lang, t)}
 <script src="/assets/js/app.js?v=${ASSET_V}" defer></script>
@@ -875,7 +928,7 @@ function templates(lang, t) {
           <strong data-f="price"></strong>
           <span class="price-per" data-f="per"></span>
         </div>
-        <a class="btn btn-glass btn-sm" data-f="wa" data-book data-book-kind="tour" data-book-name="" data-book-price="0" data-book-meta="" data-book-desc="" data-book-itin="" data-book-solo="0" data-book-photo="" target="_blank" rel="noopener">${I.wa}<span>${esc(t("tours.book"))}</span></a>
+        <a class="btn btn-glass btn-sm" data-f="wa" target="_blank" rel="noopener">${I.wa}<span>${esc(t("tours.book"))}</span></a>
       </div>
     </div>
   </article>
@@ -897,7 +950,7 @@ function templates(lang, t) {
           <strong data-f="price"></strong>
           <span class="price-per" data-f="per"></span>
         </div>
-        <a class="btn btn-glass btn-sm" data-f="wa" data-book data-book-kind="rental" data-book-name="" data-book-price="0" data-book-driver-fee="0" data-book-meta="" data-book-desc="" data-book-itin="" data-book-photo="" target="_blank" rel="noopener">${I.wa}<span>${esc(t("rental.book"))}</span></a>
+        <a class="btn btn-glass btn-sm" data-f="wa" target="_blank" rel="noopener">${I.wa}<span>${esc(t("rental.book"))}</span></a>
       </div>
     </div>
   </article>
@@ -926,127 +979,12 @@ function rentalCard(r, lang, t) {
         <strong>${esc(money(r.price, lang))}</strong>
         <span class="price-per">${esc(t("rental.perDay"))}${lang === "id" ? "" : " · " + usd(r.price)}</span>
       </div>
-      <a class="btn btn-glass btn-sm" href="${wa(msg)}" target="_blank" rel="noopener" data-book data-book-kind="rental" data-book-name="${attr(c.name)}" data-book-price="${r.price}" data-book-driver-fee="${r.driverFee || 0}" data-book-meta="${attr(t("rental." + r.type))}" data-book-desc="${attr(c.description || c.tagline || "")}" data-book-itin="" data-book-photo="${attr(r.photo || "")}">${I.wa}<span>${esc(t("rental.book"))}</span></a>
+      <a class="btn btn-glass btn-sm" href="${wa(msg)}" target="_blank" rel="noopener">${I.wa}<span>${esc(t("rental.book"))}</span></a>
     </div>
   </div>
 </article>`;
 }
 
-
-/* ---------- dialog pemesanan (foto + tamu/unit/hari + sopir) ---------- */
-function bookingDialog(lang, t) {
-  const i18n = {
-    title: t("book.title"),
-    guests: t("book.guests"),
-    days: t("book.days"),
-    units: t("book.units"),
-    driver: t("book.driver"),
-    selfDrive: t("book.selfDrive"),
-    withDriver: t("book.withDriver"),
-    msgSelfDrive: t("book.msgSelfDrive"),
-    msgWithDriver: t("book.msgWithDriver"),
-    unitShort: t("book.unitShort"),
-    total: t("book.total"),
-    cta: t("book.cta"),
-    noteTour: t("book.noteTour"),
-    noteRental: t("book.noteRental"),
-    unitDays: t("book.unitDays"),
-    kickerTour: t("book.kickerTour"),
-    kickerRental: t("book.kickerRental"),
-    about: t("book.about"),
-    itinerary: t("book.itinerary"),
-    includesTour: t("tours.includes"),
-    includesRental: t("rental.includes"),
-    perPerson: t("tours.per"),
-    perDay: t("rental.perDay"),
-    unitPeople: t("wa.ppl"),
-    unitPeople1: t("wa.ppl1"),
-    want: t("wa.want"),
-    hi: t("wa.hi"),
-    forLabel: t("wa.for"),
-    rentalBook: t("rental.book"),
-    soloTag: t("book.soloTag"),
-    soloPriceNote: t("book.soloPriceNote"),
-    soloHint: t("book.soloHint"),
-    groupTag: t("book.groupTag"),
-    groupNote: t("book.groupNote"),
-  };
-  return `<dialog class="dlg booking" id="booking" aria-label="${attr(t("book.title"))}">
-  <form method="dialog"><button class="icon-btn dlg-x" aria-label="${attr(t("ui.close"))}">✕</button></form>
-  <div class="booking-grid">
-    <div class="booking-media" data-b="media">
-      <div class="booking-shot">
-        <img class="booking-photo" data-b="photo" alt="" decoding="async" hidden>
-        <div class="booking-media-cap">
-          <span class="mini-kicker" data-b="kicker"></span>
-          <strong data-b="name"></strong>
-        </div>
-      </div>
-
-      <div class="book-row book-row-tight" data-b="guestsRow">
-        <span data-b="guestsLabel"></span>
-        <div class="stepper">
-          <button type="button" class="stepper-btn" data-step="count" data-delta="-1" aria-label="−">−</button>
-          <input type="number" inputmode="numeric" min="1" max="12" step="1" value="2" data-b="count" aria-label="${attr(t("book.guests"))}">
-          <button type="button" class="stepper-btn" data-step="count" data-delta="1" aria-label="+">+</button>
-        </div>
-      </div>
-      <p class="book-hint" data-b="soloHint"></p>
-      <div class="quick-picks quick-picks-media" data-b="quickGuests"></div>
-    </div>
-
-    <div class="booking-main">
-      <p class="book-meta muted" data-b="meta"></p>
-
-      <div class="book-detail" data-b="detail">
-        <h4 class="book-sub" data-b="aboutLabel"></h4>
-        <p class="book-about" data-b="about"></p>
-        <div data-b="itinWrap">
-          <h4 class="book-sub" data-b="itinLabel"></h4>
-          <ol class="book-itin" data-b="itinerary"></ol>
-        </div>
-        <h4 class="book-sub" data-b="incLabel"></h4>
-        <ul class="ticks" data-b="includes"></ul>
-      </div>
-
-      <div class="book-row" data-b="daysRow" hidden>
-        <span data-b="daysLabel"></span>
-        <div class="stepper">
-          <button type="button" class="stepper-btn" data-step="days" data-delta="-1" aria-label="−">−</button>
-          <input type="number" inputmode="numeric" min="1" max="30" step="1" value="1" data-b="days" aria-label="${attr(t("book.days"))}">
-          <button type="button" class="stepper-btn" data-step="days" data-delta="1" aria-label="+">+</button>
-        </div>
-      </div>
-
-      <div class="book-row" data-b="unitsRow" hidden>
-        <span data-b="unitsLabel"></span>
-        <div class="stepper">
-          <button type="button" class="stepper-btn" data-step="units" data-delta="-1" aria-label="−">−</button>
-          <input type="number" inputmode="numeric" min="1" max="5" step="1" value="1" data-b="units" aria-label="${attr(t("book.units"))}">
-          <button type="button" class="stepper-btn" data-step="units" data-delta="1" aria-label="+">+</button>
-        </div>
-      </div>
-
-      <div class="book-opt" data-b="driverRow" hidden>
-        <span data-b="driverLabel"></span>
-        <div class="segmented" role="group" aria-label="${attr(t("book.driver"))}">
-          <button type="button" data-driver="0" class="is-active">${esc(t("book.selfDrive"))}</button>
-          <button type="button" data-driver="1">${esc(t("book.withDriver"))}</button>
-        </div>
-      </div>
-
-      <div class="quick-picks" data-b="quick"></div>
-      <div class="book-total"><span data-b="totalLabel"></span><strong data-b="total"></strong></div>
-      <p class="book-break" data-b="breakdown"></p>
-      <p class="book-solo" data-b="soloNote" hidden></p>
-      <p class="book-group" data-b="groupNote" hidden></p>
-      <p class="book-note" data-b="note"></p>
-      <a class="btn btn-primary btn-block" data-b="cta" target="_blank" rel="noopener">${I.wa}<span>${esc(t("book.cta"))}</span></a>
-    </div>
-  </div>
-</dialog>
-<script type="application/json" id="book-i18n">${JSON.stringify(i18n).replace(/</g, "\\u003c")}</script>`;
-}
 
 /* ---------- halaman rental ---------- */
 function rentalPage(lang) {
@@ -1146,7 +1084,6 @@ ${nav(lang, t, false)}
 
   ${ctaSection(lang, t)}
   ${templates(lang, t)}
-  ${bookingDialog(lang, t)}
 </main>
 ${footer(lang, t)}
 <script src="/assets/js/app.js?v=${ASSET_V}" defer></script>
