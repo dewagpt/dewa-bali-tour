@@ -541,6 +541,8 @@ input, select, textarea { font: inherit; color: inherit; }
   padding: 24px 10px;
   border-radius: 26px;
 }
+.stats-inner[data-n="2"] { grid-template-columns: repeat(2, 1fr); max-width: 620px; }
+.stats-inner[data-n="3"] { grid-template-columns: repeat(3, 1fr); max-width: 860px; }
 .stat { text-align: center; padding: 4px 12px; }
 .stat + .stat { border-left: 1px solid var(--hairline); }
 .stat strong {
@@ -1149,6 +1151,7 @@ html.js [data-reveal].in { opacity: 1; transform: none; filter: none; }
   .trust-row { grid-template-columns: 1fr 1fr; row-gap: 12px; }
   .trust-row li:nth-child(3) { border-left: 0; }
   .stats-inner { grid-template-columns: 1fr 1fr; row-gap: 18px; }
+  .stats-inner[data-n="2"], .stats-inner[data-n="3"] { grid-template-columns: 1fr 1fr; max-width: none; }
   .stat:nth-child(3) { border-left: 0; }
   .feature-grid { grid-template-columns: 1fr; }
   .step-grid { grid-template-columns: 1fr; }

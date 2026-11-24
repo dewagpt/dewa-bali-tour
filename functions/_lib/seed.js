@@ -1,16 +1,16 @@
 /* dibuat otomatis oleh build.mjs — jangan diedit manual */
 export const seed = {
   "settings": {
-    "phoneE164": "6281234567890",
-    "phoneDisplay": "+62 812 3456 7890",
-    "email": "hello@dewabalitour.com",
+    "phoneE164": "6287860932801",
+    "phoneDisplay": "+62 878 6093 2801",
+    "email": "admin@dewabalitour.com",
     "address": {
-      "id": "Jl. Kayu Aya No. 8, Seminyak, Badung, Bali 80361",
-      "en": "Jl. Kayu Aya No. 8, Seminyak, Badung, Bali 80361",
-      "de": "Jl. Kayu Aya No. 8, Seminyak, Badung, Bali 80361",
-      "fr": "Jl. Kayu Aya No. 8, Seminyak, Badung, Bali 80361",
-      "es": "Jl. Kayu Aya No. 8, Seminyak, Badung, Bali 80361",
-      "ru": "Jl. Kayu Aya No. 8, Семиньяк, Бадунг, Бали 80361"
+      "id": "Jl. Gunung Agung No. 18, Denpasar, Bali 80116",
+      "en": "Jl. Gunung Agung No. 18, Denpasar, Bali 80116",
+      "de": "Jl. Gunung Agung No. 18, Denpasar, Bali 80116",
+      "fr": "Jl. Gunung Agung No. 18, Denpasar, Bali 80116",
+      "es": "Jl. Gunung Agung No. 18, Denpasar, Bali 80116",
+      "ru": "Jl. Gunung Agung No. 18, Denpasar, Bali 80116"
     },
     "hours": {
       "id": "Setiap hari · 07.00–21.00 WITA",

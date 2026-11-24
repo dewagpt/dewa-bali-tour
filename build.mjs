@@ -8,7 +8,7 @@ import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { fileURLToPath } from "node:url";
-import { site, langs, defaultLang, tours, rentals, copy, durationForms } from "./content/content.mjs";
+import { site, langs, defaultLang, tours, rentals, copy, durationForms, testimonials } from "./content/content.mjs";
 import { revOf } from "./functions/_lib/util.js";
 
 const ROOT = path.dirname(fileURLToPath(import.meta.url));
@@ -124,6 +124,32 @@ const I = {
   arrow: `<svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M5 12h13m0 0-5-5m5 5-5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   plus: `<svg viewBox="0 0 24 24" class="ico" aria-hidden="true"><path d="M12 5.5v13M5.5 12h13" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>`,
 };
+
+/* ---------- klaim rating & ulasan ----------
+   Semua bintang dan angka rating di situs hanya dirender kalau
+   rating + reviewCount diisi angka di content/content.mjs.
+   Selama nilainya 0, tidak ada satu pun klaim rating karangan
+   yang tampil (tidak ada risiko melanggar kebijakan Google). */
+const RATING = Number(site.rating) || 0;
+const REVIEWS = Number(site.reviewCount) || 0;
+const reviewsOn = RATING > 0 && REVIEWS > 0;
+const TESTIMONIALS = Array.isArray(testimonials) ? testimonials.filter((x) => x && x.quote) : [];
+const SHOW_REVIEWS = site.reviewsShow !== false && TESTIMONIALS.length > 0;
+const FOUNDED = Number(site.founded) || 2014;
+const SINCE = `Bali · since ${FOUNDED}`;
+const ratingText = (lang) => {
+  const s = RATING.toFixed(1);
+  return lang === "en" ? s : s.replace(".", ",");
+};
+const stars5 = Array.from({ length: 5 }, () => I.star).join("");
+const initialsOf = (name = "") =>
+  String(name)
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((word) => [...word][0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
 /* ---------- ilustrasi (inline SVG, tanpa file gambar) ---------- */
 const palettes = {
@@ -286,6 +312,18 @@ function head(lang, meta) {
   const alts = altList
     .map(([l, href]) => `<link rel="alternate" hreflang="${l.hreflang}" href="${site.url}${href}">`)
     .join("\n  ");
+  /* Rentang harga dihitung dari paket tour yang benar-benar ada, jadi tidak
+     pernah basi saat harga diubah di content/content.mjs. */
+  const minPrice = Math.min(...tours.map((tr) => tr.price));
+  const maxPrice = Math.max(...tours.map((tr) => tr.price));
+  /* Alamat resmi diambil dari satu sumber (site.addressParts) supaya data
+     NAP di structured data selalu sama dengan halaman kontak. */
+  const ap = site.addressParts || {};
+  /* sameAs: hanya tautan profil yang punya isi. Tautan ke domain induk
+     (mis. https://www.tripadvisor.com/) tidak berguna bagi mesin pencari. */
+  const sameAs = [site.instagram, site.facebook, site.tripadvisor].filter((u) =>
+    /^https?:\/\/[^/]+\/./i.test(String(u || ""))
+  );
   const jsonld = {
     "@context": "https://schema.org",
     "@type": "TravelAgency",
@@ -295,25 +333,22 @@ function head(lang, meta) {
     description: meta.desc,
     telephone: `+${site.phoneE164}`,
     email: site.email,
-    priceRange: "Rp 650.000 – Rp 1.250.000",
+    priceRange: `${money(minPrice, lang)} – ${money(maxPrice, lang)}`,
     address: {
       "@type": "PostalAddress",
-      streetAddress: "Jl. Kayu Aya No. 8",
-      addressLocality: "Seminyak",
-      addressRegion: "Bali",
-      postalCode: "80361",
+      streetAddress: ap.street,
+      addressLocality: ap.locality,
+      addressRegion: ap.region,
+      postalCode: ap.postal,
       addressCountry: "ID",
     },
     geo: { "@type": "GeoCoordinates", latitude: site.geo.lat, longitude: site.geo.lng },
     areaServed: { "@type": "Place", name: "Bali, Indonesia" },
     openingHours: "Mo-Su 07:00-21:00",
-    aggregateRating: {
-      "@type": "AggregateRating",
-      ratingValue: site.rating,
-      reviewCount: site.reviewCount,
-      bestRating: 5,
-    },
-    sameAs: [site.instagram, site.facebook],
+    // aggregateRating sengaja tidak ditulis: Google mewajibkan rating berasal
+    // dari ulasan nyata yang bisa diverifikasi. Selama ulasan tamu belum asli,
+    // menaruhnya di sini berisiko manual action (spam structured data).
+    sameAs,
     inLanguage: L.code,
   };
   return `<!doctype html>
@@ -371,7 +406,7 @@ function nav(lang, t, isHome = true) {
     [H("#tours"), t("nav.tours")],
     [`/${lang}/rental/`, t("nav.rental")],
     [H("#why"), t("nav.why")],
-    [H("#reviews"), t("nav.reviews")],
+    ...(SHOW_REVIEWS ? [[H("#reviews"), t("nav.reviews")]] : []),
     [H("#faq"), t("nav.faq")],
     [H("#contact"), t("nav.contact")],
   ]
@@ -387,7 +422,7 @@ function nav(lang, t, isHome = true) {
   <div class="nav glass" id="nav">
     <a class="brand" href="${isHome ? "#top" : `/${lang}/`}" aria-label="${esc(site.name)}">
       ${brandMark(38)}
-      <span class="brand-text"><strong>${esc(site.name)}</strong><span>Bali · since 2014</span></span>
+      <span class="brand-text"><strong>${esc(site.name)}</strong><span>${esc(SINCE)}</span></span>
     </a>
     <nav class="nav-links" aria-label="Primary">${links}</nav>
     <div class="nav-actions">
@@ -429,14 +464,21 @@ function hero(lang, t) {
         <a class="btn btn-primary" href="#tours">${esc(s("hero.cta1"))}${I.arrow}</a>
         <a class="btn btn-glass" href="#contact">${I.chat}${esc(s("hero.cta2"))}</a>
       </div>
-      <div class="proof">
-        <div class="avatars" aria-hidden="true"><span>SM</span><span>LB</span><span>CD</span></div>
+      ${
+        reviewsOn
+          ? `<div class="proof">
         <div class="proof-text">
-          <div class="stars">${I.star}${I.star}${I.star}${I.star}${I.star}</div>
-          <span>${esc(s("hero.rating"))}</span>
+          <div class="stars">${stars5}</div>
+          <span>${esc(ratingText(lang))} / 5 · ${num(REVIEWS, lang)} ${esc(t("reviews.eyebrow"))}</span>
           <span class="muted">${esc(s("hero.resp"))}</span>
         </div>
-      </div>
+      </div>`
+          : `<div class="proof">
+        <div class="proof-text">
+          <span>${esc(s("hero.resp"))}</span>
+        </div>
+      </div>`
+      }
     </div>
     <div class="hero-visual">
       <div class="window glass">
@@ -461,10 +503,14 @@ function hero(lang, t) {
           </div>
         </div>
       </div>
-      <div class="float-chip chip-rating glass">
+      ${
+        reviewsOn
+          ? `<div class="float-chip chip-rating glass">
         <span class="chip-star">${I.star}</span>
-        <div><strong>${String(site.rating).replace(".", lang === "en" ? "." : ",")}</strong><span>${num(site.reviewCount, lang)} ${esc(t("reviews.eyebrow"))}</span></div>
-      </div>
+        <div><strong>${ratingText(lang)}</strong><span>${num(REVIEWS, lang)} ${esc(t("reviews.eyebrow"))}</span></div>
+      </div>`
+          : ""
+      }
       <div class="float-chip chip-trust glass">${I.shield}<span>${esc(s("trust.2"))}</span></div>
     </div>
   </div>
@@ -475,18 +521,16 @@ function hero(lang, t) {
 }
 
 function stats(lang, t) {
+  const years = Math.max(1, new Date().getFullYear() - (Number(site.founded) || 2014));
   const items = [
-    { v: `${site.yearsActive}+`, k: "stats.a" },
-    { v: `${num(site.guestsTotal, lang)}+`, k: "stats.b" },
-    { v: String(site.rating).replace(".", lang === "id" || lang === "de" || lang === "es" || lang === "fr" || lang === "ru" ? "," : "."), k: "stats.c" },
+    { v: `${years}+`, k: "stats.a" },
     { v: "100%", k: "stats.d" },
   ];
+  if (reviewsOn) items.push({ v: `${ratingText(lang)} / 5`, k: "stats.c" });
   return `<section class="stats" aria-label="Company facts">
-    <div class="stats-inner glass">
+    <div class="stats-inner glass" data-n="${items.length}">
       ${items
-        .map(
-          (it) => `<div class="stat"><strong>${esc(it.v)}</strong><span>${esc(t(it.k))}</span></div>`
-        )
+        .map((it) => `<div class="stat"><strong>${esc(it.v)}</strong><span>${esc(t(it.k))}</span></div>`)
         .join("")}
     </div>
   </section>`;
@@ -608,30 +652,26 @@ function stepsSection(lang, t) {
 }
 
 function reviewsSection(lang, t) {
+  if (!SHOW_REVIEWS) return "";
   return `<section class="section" id="reviews">
   <div class="wrap">
     <header class="sec-head" data-reveal>
       <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("reviews.eyebrow"))}</span>
       <h2 class="display-2">${esc(t("reviews.title"))}</h2>
-      <p class="sec-sub">${esc(t("reviews.sub"))}</p>
+      ${reviewsOn ? `<p class="sec-sub">${esc(t("reviews.sub"))}</p>` : ""}
     </header>
     <div class="review-grid">
-      ${[1, 2, 3]
-        .map((i) => {
-          const n = t(`reviews.${i}n`);
-          const initials = n
-            .split(" ")
-            .map((x) => x[0])
-            .join("")
-            .slice(0, 2)
-            .toUpperCase();
+      ${TESTIMONIALS.slice(0, 3)
+        .map((r, i) => {
+          const stars = Math.max(0, Math.min(5, Math.round(Number(r.rating) || 0)));
+          const initials = initialsOf(r.name);
           return `<figure class="card review glass" data-reveal>
-            <div class="stars stars-lg">${I.star}${I.star}${I.star}${I.star}${I.star}</div>
-            <blockquote>“${esc(t(`reviews.${i}q`))}”</blockquote>
+            ${stars ? `<div class="stars stars-lg">${Array.from({ length: stars }, () => I.star).join("")}</div>` : ""}
+            <blockquote>“${esc(r.quote)}”</blockquote>
             <figcaption>
-              <span class="avatar a${i}" aria-hidden="true">${esc(initials)}</span>
-              <span class="who"><strong>${esc(n)}</strong><span>${esc(t(`reviews.${i}o`))}</span></span>
-              <span class="pill-tour">${esc(t(`reviews.${i}p`))}</span>
+              <span class="avatar a${i + 1}" aria-hidden="true">${esc(initials)}</span>
+              <span class="who"><strong>${esc(r.name || "")}</strong><span>${esc(r.origin || "")}</span></span>
+              ${r.tour ? `<span class="pill-tour">${esc(r.tour)}</span>` : ""}
             </figcaption>
           </figure>`;
         })
@@ -730,7 +770,7 @@ function footer(lang, t) {
   <div class="wrap">
     <div class="foot-grid">
       <div class="foot-brand">
-        <a class="brand" href="#top">${brandMark(36)}<span class="brand-text"><strong>${esc(site.name)}</strong><span>Bali · since 2014</span></span></a>
+        <a class="brand" href="#top">${brandMark(36)}<span class="brand-text"><strong>${esc(site.name)}</strong><span>${esc(SINCE)}</span></span></a>
         <p>${esc(t("footer.tagline"))}</p>
         <div class="foot-social">
           <a href="${site.instagram}" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
@@ -742,7 +782,7 @@ function footer(lang, t) {
         <h4>${esc(t("footer.explore"))}</h4>
         <a href="#tours">${esc(t("nav.tours"))}</a>
         <a href="#why">${esc(t("nav.why"))}</a>
-        <a href="#reviews">${esc(t("nav.reviews"))}</a>
+        ${SHOW_REVIEWS ? `<a href="#reviews">${esc(t("nav.reviews"))}</a>` : ""}
         <a href="#faq">${esc(t("nav.faq"))}</a>
       </nav>
       <nav class="foot-col" aria-label="${esc(t("footer.company"))}">
@@ -1310,6 +1350,9 @@ ${ICON_LINKS}
 
 /* ---------- berkas statis ---------- */
 function sitemap() {
+  // Tanggal build dipakai sebagai <lastmod>: Google memakai ini untuk tahu
+  // kapan halaman terakhir berubah, dan mengabaikan changefreq/priority.
+  const lastmod = new Date().toISOString().slice(0, 10);
   const entry = (pathFor, priority) =>
     langs
       .map((l) => {
@@ -1318,6 +1361,7 @@ function sitemap() {
           .join("\n");
         return `  <url>
     <loc>${site.url}${pathFor(l.code)}</loc>
+    <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>${priority}</priority>
 ${alts}
