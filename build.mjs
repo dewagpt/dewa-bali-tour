@@ -327,6 +327,17 @@ const brandMark = (size = 40) => {
 
 const dots = `<span class="win-dots" aria-hidden="true"><i></i><i></i><i></i></span>`;
 
+/* Tag verifikasi Search Console / Bing. Hanya ditulis kalau tokennya diisi,
+   jadi tidak ada <meta content=""> kosong yang membingungkan crawler. */
+function verifyTags() {
+  const out = [];
+  const g = String(site.googleSiteVerification || "").trim();
+  const b = String(site.bingSiteVerification || "").trim();
+  if (/^[A-Za-z0-9_.:-]{10,120}$/.test(g)) out.push(`  <meta name="google-site-verification" content="${esc(g)}">`);
+  if (/^[A-Za-z0-9_.:-]{10,120}$/.test(b)) out.push(`  <meta name="msvalidate.01" content="${esc(b)}">`);
+  return out.join("\n");
+}
+
 function head(lang, meta) {
   const L = langs.find((l) => l.code === lang);
   const path = meta.path || `/${lang}/`;
@@ -397,6 +408,7 @@ function head(lang, meta) {
   <meta name="twitter:description" content="${esc(meta.desc)}">
   <meta name="twitter:image" content="${site.url}/og.jpg">
   <meta name="theme-color" content="${site.themeColor}">
+${verifyTags()}
 ${ICON_LINKS}
   <link rel="stylesheet" href="/assets/css/styles.css?v=${ASSET_V}">
   <script>try{var s=localStorage.getItem("dbt-theme");document.documentElement.dataset.theme=s||(window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")}catch(e){}</script>

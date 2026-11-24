@@ -40,6 +40,15 @@ export const site = {
   cfBeaconToken: "GANTI_DENGAN_TOKEN_CLOUDFLARE",
   // Kurs estimasi untuk label harga sekunder (IDR → USD)
   usdRate: 16200,
+  // ---- Verifikasi mesin pencari ---------------------------------
+  // Tempel token dari Google Search Console / Bing Webmaster Tools di sini,
+  // jalankan `node build.mjs`, lalu deploy. Selama kosong, tag tidak ditulis
+  // sama sekali (bukan tag kosong yang bikin crawler bingung).
+  // Google  : Search Console → Add property → URL prefix → HTML tag
+  //           → tempel HANYA nilai content="..." (contoh: "AbC123...xyz").
+  // Bing    : Webmaster Tools → Verify → Meta tag → nilai content="...".
+  googleSiteVerification: "",
+  bingSiteVerification: "",
   // ---- Klaim rating & ulasan ------------------------------------
   // Selama angka di bawah masih 0, SEMUA klaim rating otomatis
   // disembunyikan (bintang di hero + chip rating) supaya situs tidak
