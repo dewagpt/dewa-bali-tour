@@ -104,6 +104,13 @@ async function resendGet(key, path) {
 async function checkKey(key) {
   const { status, body } = await resendGet(key, "/domains");
   const msg = JSON.stringify(body || {});
+
+  // Key "Sending access" tidak boleh membaca daftar domain, tapi tetap bisa kirim.
+  if (/restricted|not allowed|permission|forbidden/i.test(msg) && !/invalid/i.test(msg)) {
+    ok("API key valid (akses kirim saja — daftar domain tidak bisa dibaca).");
+    return { restricted: true, domains: [] };
+  }
+
   const invalidKey =
     /invalid|unauthor|not valid|api key/i.test(msg) ||
     status === 401 ||
@@ -111,7 +118,7 @@ async function checkKey(key) {
   if (invalidKey) {
     bad("API key ditolak Resend.");
     console.log(c.dim(`     ${msg.slice(0, 200)}`));
-    console.log(c.dim("     Pastikan key bertipe Full access (bukan hanya inbound), dan belum dihapus."));
+    console.log(c.dim("     Pastikan key belum dihapus dan tipenya Full access atau Sending access."));
     return null;
   }
   if (status !== 200) {
@@ -120,7 +127,7 @@ async function checkKey(key) {
     return null;
   }
   ok("API key valid.");
-  return Array.isArray(body.data) ? body.data : [];
+  return { restricted: false, domains: Array.isArray(body.data) ? body.data : [] };
 }
 
 function showDomains(domains) {
@@ -185,9 +192,15 @@ async function main() {
   }
 
   step(2, "Periksa key & domain");
-  const domains = await checkKey(key);
-  if (!domains) process.exit(1);
-  const verified = showDomains(domains);
+  const check = await checkKey(key);
+  if (!check) process.exit(1);
+  let verified = null;
+  if (check.restricted) {
+    verified = { name: "dewabalitour.com" };
+    ok("Domain dipakai: dewabalitour.com (sudah diverifikasi di Resend).");
+  } else {
+    verified = showDomains(check.domains);
+  }
 
   let fromDomain = "dewabalitour.com";
   if (!verified) {
