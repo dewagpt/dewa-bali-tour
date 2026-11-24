@@ -358,6 +358,47 @@ function writePane(pane, data, kind) {
   if (kind === "tours") set("itinerary", (data.itinerary || []).join("\n"));
 }
 
+/** Panggil endpoint terjemahan dan kembalikan peta { en: {...}, de: {...}, ... }. */
+async function fetchTranslations(kind, source) {
+  const res = await api("/admin/translate", { method: "POST", body: { kind, source } });
+  return res.translations || {};
+}
+
+/** Pasang tombol terjemahan + catatan status pada sebuah form. */
+function wireTranslateButton(form, kind, getSource, apply) {
+  const btn = form.querySelector("[data-translate], [data-translate-settings]");
+  const note = form.querySelector("[data-translate-note]");
+  if (!btn) return;
+  const label = btn.textContent;
+  const say = (msg) => {
+    if (!note) return;
+    note.hidden = false;
+    note.textContent = msg;
+  };
+
+  btn.addEventListener("click", async () => {
+    const source = getSource();
+    if (!source) {
+      say("Isi dulu teks bahasa Indonesia.");
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = "Menerjemahkan…";
+    say("Menghubungi mesin terjemahan. Bisa 20–60 detik.");
+    try {
+      const translations = await fetchTranslations(kind, source);
+      apply(translations);
+      say("Selesai. Periksa tiap tab, lalu klik Simpan. Terjemahan mesin tetap perlu dibaca manusia.");
+      toast("Terjemahan terisi — cek lalu Simpan");
+    } catch (err) {
+      say(err.message);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = label;
+    }
+  });
+}
+
 function langPane(lang, data, kind) {
   const c = data?.t?.[lang.code] || {};
   const includeText = (c.includes || []).join("\n");
@@ -384,9 +425,13 @@ function langPane(lang, data, kind) {
 }
 
 function settingsPane(lang, data) {
-  return `<div class="lang-pane" data-lang-pane="${lang.code}" ${lang.code === "id" ? "" : "hidden"}>
-    <label class="field"><span>Alamat kantor (${lang.short})</span>
-      <input name="address" type="text" maxlength="200" value="${esc(data?.address?.[lang.code] || "")}">
+  const isId = lang.code === "id";
+  const addr = data?.address?.[lang.code] || data?.address?.id || "";
+  return `<div class="lang-pane" data-lang-pane="${lang.code}" ${isId ? "" : "hidden"}>
+    <label class="field"><span>Alamat kantor${isId ? "" : " (mengikuti bahasa Indonesia)"}</span>
+      <input name="address" type="text" maxlength="200" value="${esc(addr)}" ${
+        isId ? "" : "readonly"
+      }>
     </label>
     <label class="field"><span>Jam operasional (${lang.short})</span>
       <input name="hours" type="text" maxlength="120" value="${esc(data?.hours?.[lang.code] || "")}">
@@ -894,6 +939,16 @@ function renderSettings() {
           (l, i) => `<button type="button" class="lang-tab ${i === 0 ? "is-active" : ""}" data-lang="${l.code}">${l.short}</button>`
         ).join("")}
       </div>
+      <div class="translate-bar">
+        <button type="button" class="btn btn-glass btn-sm" data-translate-settings>
+          Terjemahkan otomatis dari bahasa Indonesia
+        </button>
+        <label class="translate-auto">
+          <input type="checkbox" data-auto-translate checked>
+          <span>Otomatis saat Simpan</span>
+        </label>
+        <span class="translate-note" data-translate-note hidden></span>
+      </div>
       ${LANGS.map((l) => settingsPane(l, s)).join("")}
       <div class="editor-foot"><button type="submit" class="btn btn-primary">Simpan pengaturan</button></div>
       <p class="hint" style="margin-top:10px">Terakhir diubah: ${esc(state.data.updatedAt || "—")}</p>
@@ -901,6 +956,29 @@ function renderSettings() {
 
   const form = $("#settings-form");
   wireHeroFields(form);
+  wireTranslateButton(
+    form,
+    "settings",
+    () => {
+      const pane = form.querySelector('[data-lang-pane="id"]');
+      const hours = pane.querySelector('[name="hours"]').value.trim();
+      if (!hours) return null;
+      return { hours };
+    },
+    (translations) => {
+      const idPane = form.querySelector('[data-lang-pane="id"]');
+      // Alamat = rujukan fisik (peta, taksi, kurir) → disalin apa adanya,
+      // jangan diterjemahkan supaya tidak berubah jadi "Calle"/"Джл.".
+      const idAddress = idPane.querySelector('[name="address"]').value.trim();
+      for (const l of LANGS) {
+        if (l.code === "id") continue;
+        const pane = form.querySelector(`[data-lang-pane="${l.code}"]`);
+        if (idAddress) pane.querySelector('[name="address"]').value = idAddress;
+        const blk = translations[l.code];
+        if (blk?.hours) pane.querySelector('[name="hours"]').value = blk.hours;
+      }
+    }
+  );
   $$(".lang-tab", form).forEach((tab) =>
     tab.addEventListener("click", () => {
       $$(".lang-tab", form).forEach((t) => t.classList.toggle("is-active", t === tab));
@@ -932,6 +1010,41 @@ function renderSettings() {
     const btn = form.querySelector('button[type="submit"]');
     btn.disabled = true;
     try {
+      // Alamat & jam cukup ditulis dalam bahasa Indonesia: versi bahasa lain
+      // dibuat otomatis saat Simpan, kecuali pengguna mematikan centangnya.
+      const auto = form.querySelector("[data-auto-translate]");
+      const idPane = form.querySelector('[data-lang-pane="id"]');
+      const idAddress = idPane.querySelector('[name="address"]').value.trim();
+      const idHours = idPane.querySelector('[name="hours"]').value.trim();
+
+      // Alamat selalu disalin apa adanya ke semua bahasa (rujukan fisik).
+      if (idAddress) {
+        for (const l of LANGS) {
+          if (l.code === "id") continue;
+          address[l.code] = idAddress;
+        }
+      }
+
+      if (auto && auto.checked && idHours) {
+        const changed = idHours !== (state.data.settings?.hours?.id || "").trim();
+        if (changed) {
+          btn.textContent = "Menerjemahkan…";
+          try {
+            const translations = await fetchTranslations("settings", { hours: idHours });
+            for (const l of LANGS) {
+              if (l.code === "id") continue;
+              const blk = translations[l.code];
+              if (blk?.hours) hours[l.code] = blk.hours;
+            }
+          } catch (err) {
+            toast(`Terjemahan gagal: ${err.message}. Pengaturan belum disimpan.`);
+            return;
+          } finally {
+            btn.textContent = "Simpan pengaturan";
+          }
+        }
+      }
+
       await api("/admin/settings", { method: "PUT", body: payload });
       toast("Pengaturan disimpan");
       await loadData();

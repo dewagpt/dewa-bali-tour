@@ -45,6 +45,17 @@ const RENTAL_SHAPE = {
   description: "string",
 };
 
+/**
+ * Jam operasional di panel Pengaturan.
+ *
+ * Alamat sengaja TIDAK diterjemahkan: alamat adalah rujukan fisik untuk
+ * peta, taksi, dan kurir. Menerjemahkannya ("Jl." -> "Calle" / "Джл.")
+ * membuat alamat salah. Jadi alamat disalin apa adanya ke semua bahasa.
+ */
+const SETTINGS_SHAPE = {
+  hours: "string",
+};
+
 function sysPrompt(shape, targetName) {
   const spec = Object.entries(shape)
     .map(([k, v]) => `  "${k}": ${v === "lines" ? '["satu baris", "baris lain"]' : '"teks"'}`)
@@ -163,5 +174,5 @@ export async function translateAll(ai, source, shape, targets) {
   return out;
 }
 
-export const TRANSLATE_SHAPES = { tour: TOUR_SHAPE, rental: RENTAL_SHAPE };
+export const TRANSLATE_SHAPES = { tour: TOUR_SHAPE, rental: RENTAL_SHAPE, settings: SETTINGS_SHAPE };
 export const TRANSLATE_TARGETS = ["en", "de", "fr", "es", "ru"];
