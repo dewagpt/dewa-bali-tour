@@ -79,6 +79,26 @@ const ASSET_V = hash(
     fs.readFileSync(path.join(ROOT, "assets/js/app.js"), "utf8")
 );
 
+/* Versi ikon: dihitung dari isi berkas ikon, supaya browser tidak memakai
+   favicon lama dari cache-nya sendiri saat logo diperbarui. */
+const ICON_V = (() => {
+  const parts = ["favicon.svg", "favicon.ico", "apple-touch-icon.png"].map((f) => {
+    const p = path.join(ROOT, "assets/img", f);
+    return fs.existsSync(p) ? fs.readFileSync(p).toString("base64") : f;
+  });
+  return hash(parts.join("|")).slice(0, 8);
+})();
+
+/* Satu sumber untuk semua tag ikon, dipakai di keempat jenis halaman.
+   Ikon SVG + apple-touch-icon dilayani dari /assets/img/ (bukan dari root):
+   path root /favicon.svg pernah ter-cache "immutable" 1 tahun di edge dengan
+   isi ikon generasi lama, sehingga tidak bisa diperbarui tanpa purge manual.
+   /assets/* sudah immutable, jadi aman karena URL-nya diberi ?v=.
+   favicon.ico tetap di root: browser memintanya otomatis tanpa <link>. */
+const ICON_LINKS = `  <link rel="icon" href="/favicon.ico?v=${ICON_V}" sizes="32x32">
+  <link rel="icon" href="/assets/img/favicon.svg?v=${ICON_V}" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/img/apple-touch-icon.png?v=${ICON_V}">`;
+
 const ADMIN_V = (() => {
   const a = path.join(ROOT, "assets/admin/admin.css");
   const b = path.join(ROOT, "assets/admin/admin.js");
@@ -320,8 +340,7 @@ function head(lang, meta) {
   <meta name="twitter:description" content="${esc(meta.desc)}">
   <meta name="twitter:image" content="${site.url}/og.jpg">
   <meta name="theme-color" content="${site.themeColor}">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+${ICON_LINKS}
   <link rel="stylesheet" href="/assets/css/styles.css?v=${ASSET_V}">
   <script>try{var s=localStorage.getItem("dbt-theme");document.documentElement.dataset.theme=s||(window.matchMedia("(prefers-color-scheme:dark)").matches?"dark":"light")}catch(e){}</script>
   <script>
@@ -1105,7 +1124,7 @@ function adminPage() {
   <title>Admin — ${esc(site.name)}</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#0e9488">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+${ICON_LINKS}
   <link rel="stylesheet" href="/assets/css/styles.css?v=${v}">
   <link rel="stylesheet" href="/assets/admin/admin.css?v=${v}">
 </head>
@@ -1205,7 +1224,7 @@ function rootPage() {
   ${alts}
   <link rel="alternate" hreflang="x-default" href="${site.url}/en/">
   <meta name="theme-color" content="${site.themeColor}">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+${ICON_LINKS}
   <link rel="stylesheet" href="/assets/css/styles.css?v=${ASSET_V}">
   <script>
     (function(){
@@ -1271,7 +1290,7 @@ function notFound() {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>404 — ${esc(site.name)}</title>
   <meta name="robots" content="noindex">
-  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+${ICON_LINKS}
   <link rel="stylesheet" href="/assets/css/styles.css?v=${ASSET_V}">
 </head>
 <body>
@@ -1328,8 +1347,8 @@ ${ADMIN_PATH}*
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-store
 
-/favicon.svg
-  Cache-Control: public, max-age=604800
+/favicon.ico
+  Cache-Control: public, max-age=86400
 `;
 
 const ROBOTS = `User-agent: *
@@ -1386,9 +1405,23 @@ for (const f of ["admin.css", "admin.js"]) {
   const src = path.join(ROOT, "assets/admin", f);
   if (fs.existsSync(src)) fs.copyFileSync(src, out("assets", "admin", f));
 }
-for (const f of ["favicon.svg", "og.jpg", "apple-touch-icon.png"]) {
+/* og.jpg tetap di root (dipakai crawler sosial). Ikon SVG + apple-touch-icon
+   disalin ke /assets/img/ agar URL-nya bisa di-cache immutable dengan ?v=. */
+for (const f of ["og.jpg"]) {
   const p = path.join(ROOT, "assets/img", f);
   if (fs.existsSync(p)) fs.copyFileSync(p, out(f));
+}
+
+/* favicon.ico di root — browser meminta path ini otomatis, tanpa <link>. */
+{
+  const p = path.join(ROOT, "assets/img", "favicon.ico");
+  if (fs.existsSync(p)) fs.copyFileSync(p, out("favicon.ico"));
+}
+
+/* Ikon versi-panjang di /assets/img/ (sudah dicakup aturan /assets/* immutable). */
+for (const f of ["favicon.svg", "apple-touch-icon.png"]) {
+  const p = path.join(ROOT, "assets/img", f);
+  if (fs.existsSync(p)) fs.copyFileSync(p, out("assets", "img", f));
 }
 
 /* cek kelengkapan teks */

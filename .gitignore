@@ -5,3 +5,7 @@ node_modules/
 .data/
 .wrangler/
 dist/
+README.md
+.env
+.env.*
+.dev.vars
