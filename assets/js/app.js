@@ -71,7 +71,8 @@
     burger.setAttribute("aria-expanded", "false");
   }
 
-  burger?.addEventListener("click", () => {
+  burger?.addEventListener("click", (e) => {
+    e.stopPropagation();
     const open = sheet.hidden;
     sheet.hidden = !open;
     burger.setAttribute("aria-expanded", String(open));
@@ -79,6 +80,25 @@
   });
 
   $$("#sheet a").forEach((a) => a.addEventListener("click", closeSheet));
+
+  /* ketuk di luar menu atau tekan Escape untuk menutup */
+  document.addEventListener("click", (e) => {
+    if (!sheet || sheet.hidden) return;
+    if (sheet.contains(e.target) || burger?.contains(e.target)) return;
+    closeSheet();
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Escape") return;
+    if (sheet && !sheet.hidden) {
+      closeSheet();
+      burger?.focus({ preventScroll: true });
+    }
+  });
+
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 900) closeSheet();
+  }, { passive: true });
 
   /* ---------------- menu bahasa ---------------- */
   const lang = $("[data-lang]");
@@ -433,18 +453,37 @@
   /* Perjalanan solo: pakai harga khusus 1 orang kalau tersedia. */
   const isSolo = () => book.kind === "tour" && book.count === 1 && book.soloPrice > 0;
 
-  const bookTotal = () =>
-    book.kind === "tour"
-      ? isSolo()
-        ? book.soloPrice
-        : book.price * book.count
-      : (book.price + (book.driver ? book.driverFee : 0)) * book.units * book.days;
+  /* Diskon rombongan otomatis, bertingkat sesuai jumlah peserta.
+     Semakin besar grup, semakin kecil biaya per orang — tanpa mengubah
+     harga 1–2 peserta (solo & pasangan tetap seperti sebelumnya). */
+  const GROUP_TIERS = [
+    { min: 7, pct: 18 },
+    { min: 5, pct: 12 },
+    { min: 3, pct: 6 },
+  ];
+  const groupTier = () =>
+    book.kind === "tour" ? GROUP_TIERS.find((t) => book.count >= t.min) || null : null;
+
+  const bookTotal = () => {
+    if (book.kind !== "tour") {
+      return (book.price + (book.driver ? book.driverFee : 0)) * book.units * book.days;
+    }
+    if (isSolo()) return book.soloPrice;
+    const gross = book.price * book.count;
+    const tier = groupTier();
+    return tier ? Math.round((gross * (100 - tier.pct)) / 100 / 1000) * 1000 : gross;
+  };
 
   function bookBreakdown() {
     if (book.kind === "tour") {
-      return isSolo()
-        ? `${bookI18n.soloTag} · 1 ${bookI18n.unitPeople1} · ${fmtMoney(book.soloPrice)}`
-        : `${book.count} ${book.count === 1 ? bookI18n.unitPeople1 : bookI18n.unitPeople} × ${fmtMoney(book.price)}`;
+      if (isSolo()) {
+        return `${bookI18n.soloTag} · 1 ${bookI18n.unitPeople1} · ${fmtMoney(book.soloPrice)}`;
+      }
+      const base = `${book.count} ${book.count === 1 ? bookI18n.unitPeople1 : bookI18n.unitPeople} × ${fmtMoney(book.price)}`;
+      const tier = groupTier();
+      if (!tier) return base;
+      const save = book.price * book.count - bookTotal();
+      return `${base} − ${tier.pct}% (${bookI18n.groupTag} ${fmtMoney(save)})`;
     }
     const driverTxt = book.driver ? bookI18n.msgWithDriver : bookI18n.msgSelfDrive;
     return `${book.units} ${bookI18n.unitShort} × ${book.days} ${bookI18n.unitDays} · ${driverTxt}`;
@@ -551,7 +590,7 @@
       guestWrap.innerHTML = "";
       guestWrap.hidden = !isTour;
       if (isTour) {
-        [1, 2, 3, 5].forEach((n) => {
+        [1, 2, 3, 5, 7].forEach((n) => {
           const b = document.createElement("button");
           b.type = "button";
           b.textContent = n === 1 ? bookI18n.soloTag : String(n);
@@ -591,11 +630,27 @@
     if (soloNote) soloNote.hidden = !isSolo();
     if (isSolo()) soloNote.textContent = bookI18n.soloPriceNote.replace("{price}", fmtMoney(book.soloPrice));
 
+    /* keterangan diskon rombongan */
+    const groupNote = q('[data-b="groupNote"]');
+    if (groupNote) {
+      const tier = groupTier();
+      groupNote.hidden = !tier;
+      if (tier) {
+        const save = book.price * book.count - bookTotal();
+        groupNote.textContent = bookI18n.groupNote
+          .replace("{pct}", String(tier.pct))
+          .replace("{n}", String(book.count))
+          .replace("{save}", fmtMoney(save));
+      }
+    }
+
     const total = fmtMoney(bookTotal());
+    const tier = groupTier();
+    const groupTxt = tier ? ` ${bookI18n.groupTag} ${tier.pct}%: ${fmtMoney(book.price * book.count - bookTotal())}.` : "";
     const msg = isTour
       ? `${bookI18n.hi} ${bookI18n.want} ${book.name} ${bookI18n.forLabel} ${book.count} ${
           book.count === 1 ? bookI18n.unitPeople1 : bookI18n.unitPeople
-        }. ${bookI18n.total}: ${total}.`
+        }. ${bookI18n.total}: ${total}.${groupTxt}`
       : `${bookI18n.hi} ${bookI18n.rentalBook} ${book.name}, ${book.units} ${bookI18n.unitShort}, ${book.days} ${bookI18n.unitDays}, ${
           book.driver ? bookI18n.msgWithDriver : bookI18n.msgSelfDrive
         }. ${bookI18n.total}: ${total}.`;

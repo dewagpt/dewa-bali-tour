@@ -590,7 +590,7 @@ function toursSection(lang, t) {
         .join("")}
     </div>
     <div class="tour-grid" id="tour-grid">${cards}</div>
-    <p class="note">${esc(t("tours.note"))}</p>
+    <p class="note">${esc(t("tours.note"))} <span class="note-strong">${esc(t("tours.groupNote"))}</span></p>
   </div>
 </section>`;
 }
@@ -968,6 +968,8 @@ function bookingDialog(lang, t) {
     soloTag: t("book.soloTag"),
     soloPriceNote: t("book.soloPriceNote"),
     soloHint: t("book.soloHint"),
+    groupTag: t("book.groupTag"),
+    groupNote: t("book.groupNote"),
   };
   return `<dialog class="dlg booking" id="booking" aria-label="${attr(t("book.title"))}">
   <form method="dialog"><button class="icon-btn dlg-x" aria-label="${attr(t("ui.close"))}">✕</button></form>
@@ -1037,6 +1039,7 @@ function bookingDialog(lang, t) {
       <div class="book-total"><span data-b="totalLabel"></span><strong data-b="total"></strong></div>
       <p class="book-break" data-b="breakdown"></p>
       <p class="book-solo" data-b="soloNote" hidden></p>
+      <p class="book-group" data-b="groupNote" hidden></p>
       <p class="book-note" data-b="note"></p>
       <a class="btn btn-primary btn-block" data-b="cta" target="_blank" rel="noopener">${I.wa}<span>${esc(t("book.cta"))}</span></a>
     </div>
