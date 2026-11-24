@@ -456,7 +456,8 @@ function openEditor(kind, item) {
                 </label>
                 <button type="button" class="btn btn-glass btn-sm" data-photo-clear>Hapus foto</button>
               </div>
-              <p class="upload-hint">JPG/PNG/WebP · otomatis dikompres ke maks 1600 px.</p>
+              <p class="upload-hint">JPG/PNG/WebP · otomatis dikompres ke maks 1600 px.<br>
+                Pakai foto asli minimal 1200 px sisi terpanjang — foto kecil akan terlihat buram di kartu.</p>
               <input name="photo" type="text" maxlength="300" placeholder="atau tempel URL/path foto" value="${esc(base.photo || "")}">
             </div>
           </div>
@@ -560,13 +561,28 @@ function wireEditor(kind, item) {
   fileInput.addEventListener("change", async () => {
     const file = fileInput.files && fileInput.files[0];
     if (!file) return;
+    /* Foto asli yang terlalu kecil akan tampil buram di kartu (kartu butuh
+       ± 380 px lebar). Beri tahu sekarang, bukan setelah tayang. */
+    const small = await new Promise((resolve) => {
+      const u = URL.createObjectURL(file);
+      const im = new Image();
+      im.onload = () => {
+        URL.revokeObjectURL(u);
+        resolve(im.naturalWidth > 0 && im.naturalWidth < 1200 ? im.naturalWidth : 0);
+      };
+      im.onerror = () => {
+        URL.revokeObjectURL(u);
+        resolve(0);
+      };
+      im.src = u;
+    });
     const label = fileInput.closest("label");
     label.classList.add("is-busy");
     try {
       const url = await uploadPhoto(file);
       photoInput.value = url;
       setPreview(url);
-      toast("Foto diunggah");
+      toast(small ? `Foto diunggah — tapi hanya ${small} px lebarnya, bisa terlihat buram.` : "Foto diunggah");
     } catch (err) {
       toast(err.message);
     } finally {
