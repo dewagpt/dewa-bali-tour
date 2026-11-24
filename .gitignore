@@ -10,3 +10,7 @@ README.md
 .env.*
 .dev.vars
 wrangler.local.toml
+
+# data uji lokal (jangan pernah di-commit)
+.data-e2e/
+.data-*/
