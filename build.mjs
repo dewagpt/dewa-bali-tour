@@ -1392,6 +1392,11 @@ fs.writeFileSync(out("index.html"), rootPage());
 fs.writeFileSync(out("404.html"), notFound());
 fs.writeFileSync(out("sitemap.xml"), sitemap());
 fs.writeFileSync(out("robots.txt"), ROBOTS);
+
+/* IndexNow: file kunci harus bisa diakses di /<kunci>.txt supaya Bing/Yandex
+   percaya bahwa kita pemilik domain. Isinya ya kuncinya sendiri. */
+const inKey = String(site.indexNowKey || "").trim();
+if (/^[a-f0-9]{16,64}$/i.test(inKey)) fs.writeFileSync(out(`${inKey}.txt`), inKey);
 fs.writeFileSync(out("_headers"), HEADERS);
 
 fs.copyFileSync(path.join(ROOT, "assets/css/styles.css"), out("assets", "css", "styles.css"));

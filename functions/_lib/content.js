@@ -49,6 +49,12 @@ export const site = {
   // Bing    : Webmaster Tools → Verify → Meta tag → nilai content="...".
   googleSiteVerification: "",
   bingSiteVerification: "",
+  // ---- IndexNow (Bing, Yandex, Seznam) -------------------------
+  // Kunci publik, bukan rahasia. File /<kunci>.txt otomatis dibuat saat build.
+  // Setelah deploy, beri tahu Bing bahwa ada halaman baru:
+  //   curl "https://api.indexnow.org/indexnow?url=https://dewabalitour.com/id/&key=<kunci>"
+  // Kosongkan ("") untuk menonaktifkan file kunci ini.
+  indexNowKey: "640e5da2c3d37243b0e4621e94e77400",
   // ---- Klaim rating & ulasan ------------------------------------
   // Selama angka di bawah masih 0, SEMUA klaim rating otomatis
   // disembunyikan (bintang di hero + chip rating) supaya situs tidak
