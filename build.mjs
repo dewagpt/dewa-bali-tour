@@ -660,7 +660,7 @@ function reviewsSection(lang, t) {
       <h2 class="display-2">${esc(t("reviews.title"))}</h2>
       ${reviewsOn ? `<p class="sec-sub">${esc(t("reviews.sub"))}</p>` : ""}
     </header>
-    <div class="review-grid">
+    <div class="review-grid" data-n="${Math.min(3, TESTIMONIALS.length)}">
       ${TESTIMONIALS.slice(0, 3)
         .map((r, i) => {
           const stars = Math.max(0, Math.min(5, Math.round(Number(r.rating) || 0)));
