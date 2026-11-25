@@ -114,11 +114,11 @@ export const defaultLang = "id";
    --------------------------------------------------------------- */
 export const tours = [
   {
-    id: "ubud", soloPrice: 750000,
+    id: "ubud", soloPrice: 950000,
     photo: "/assets/img/tours/ubud.jpg",
     category: "culture",
     art: "terrace",
-    price: 450000,
+    price: 700000,
     hours: 10,
     featured: true,
     t: {
@@ -131,11 +131,11 @@ export const tours = [
     },
   },
   {
-    id: "penida", soloPrice: 950000,
+    id: "penida", soloPrice: 1000000,
     photo: "/assets/img/tours/penida.jpg",
     category: "island",
     art: "island",
-    price: 850000,
+    price: 900000,
     hours: 12,
     featured: true,
     t: {
@@ -148,11 +148,11 @@ export const tours = [
     },
   },
   {
-    id: "batur", soloPrice: 1000000,
+    id: "batur", soloPrice: 800000,
     photo: "/assets/img/tours/batur.jpg",
     category: "adventure",
     art: "volcano",
-    price: 900000,
+    price: 650000,
     hours: 8,
     featured: false,
     t: {
@@ -169,7 +169,7 @@ export const tours = [
     photo: "/assets/img/tours/uluwatu.jpg",
     category: "culture",
     art: "temple",
-    price: 575000,
+    price: 700000,
     hours: 9,
     featured: false,
     t: {
@@ -203,7 +203,7 @@ export const tours = [
     photo: "/assets/img/tours/east.jpg",
     category: "culture",
     art: "gate",
-    price: 525000,
+    price: 750000,
     hours: 11,
     featured: false,
     t: {
@@ -226,7 +226,7 @@ export const tours = [
    --------------------------------------------------------------- */
 export const rentals = [
   {
-    id: "avanza", type: "car", art: "car", price: 450000, featured: true, photo: "/assets/img/rental/avanza.jpg", driverFee: 150000,
+    id: "avanza", type: "car", art: "car", price: 350000, featured: true, photo: "/assets/img/rental/avanza.jpg", driverFee: 150000,
     t: {
       id: { name: "Toyota Avanza", tagline: "MPV 7 kursi, irit dan lincah untuk rute Bali selatan.", includes: ["7 kursi", "Transmisi matic", "Antar-jemput hotel"] },
       en: { name: "Toyota Avanza", tagline: "Seven-seat MPV, frugal and easy on south Bali roads.", includes: ["7 seats", "Automatic", "Hotel delivery"] },
@@ -237,7 +237,7 @@ export const rentals = [
     },
   },
   {
-    id: "innova", type: "car", art: "car", price: 750000, featured: false, photo: "/assets/img/rental/innova.jpg", driverFee: 175000,
+    id: "innova", type: "car", art: "car", price: 650000, featured: false, photo: "/assets/img/rental/innova.jpg", driverFee: 175000,
     t: {
       id: { name: "Toyota Innova Zenix", tagline: "MPV premium untuk keluarga, bagasi lega dan kabin senyap.", includes: ["7 kursi", "Kabin senyap", "Opsi driver"] },
       en: { name: "Toyota Innova Zenix", tagline: "Premium MPV for families — roomy boot, quiet cabin.", includes: ["7 seats", "Quiet cabin", "Driver optional"] },
@@ -248,7 +248,7 @@ export const rentals = [
     },
   },
   {
-    id: "alphard", type: "car", art: "car", price: 1800000, featured: true, photo: "/assets/img/rental/alphard.jpg", driverFee: 350000,
+    id: "alphard", type: "car", art: "car", price: 1850000, featured: true, photo: "/assets/img/rental/alphard.jpg", driverFee: 0,
     t: {
       id: { name: "Toyota Alphard", tagline: "Untuk tamu VIP dan perjalanan bisnis, dengan driver rapi.", includes: ["6 kursi captain", "Driver berpengalaman", "Air mineral"] },
       en: { name: "Toyota Alphard", tagline: "For VIP guests and business trips, with a smart driver.", includes: ["6 captain seats", "Experienced driver", "Bottled water"] },
@@ -259,7 +259,7 @@ export const rentals = [
     },
   },
   {
-    id: "brio", type: "car", art: "car", price: 300000, featured: false, photo: "/assets/img/rental/brio.jpg", driverFee: 150000,
+    id: "brio", type: "car", art: "car", price: 275000, featured: false, photo: "/assets/img/rental/brio.jpg", driverFee: 150000,
     t: {
       id: { name: "Honda Brio", tagline: "City car kecil, mudah parkir di gang Ubud dan Seminyak.", includes: ["5 kursi", "Irit BBM", "Cocok berdua"] },
       en: { name: "Honda Brio", tagline: "Small city car — easy to park in Ubud and Seminyak lanes.", includes: ["5 seats", "Fuel-efficient", "Great for two"] },
@@ -270,7 +270,7 @@ export const rentals = [
     },
   },
   {
-    id: "nmax", type: "bike", art: "bike", price: 150000, featured: true, photo: "/assets/img/rental/nmax.jpg", driverFee: 0,
+    id: "nmax", type: "bike", art: "bike", price: 140000, featured: true, photo: "/assets/img/rental/nmax.jpg", driverFee: 0,
     t: {
       id: { name: "Yamaha NMAX 155", tagline: "Skuter matic nyaman untuk menjelajah Bali selatan dan Ubud.", includes: ["2 helm", "Matic", "Antar ke hotel"] },
       en: { name: "Yamaha NMAX 155", tagline: "Comfortable automatic scooter for south Bali and Ubud.", includes: ["2 helmets", "Automatic", "Delivered to hotel"] },
@@ -281,7 +281,7 @@ export const rentals = [
     },
   },
   {
-    id: "vario", type: "bike", art: "bike", price: 100000, featured: false, photo: "/assets/img/rental/vario.jpg", driverFee: 0,
+    id: "vario", type: "bike", art: "bike", price: 80000, featured: false, photo: "/assets/img/rental/vario.jpg", driverFee: 0,
     t: {
       id: { name: "Honda Vario 125", tagline: "Pilihan hemat untuk jarak dekat dan jalan sempit.", includes: ["2 helm", "Matic", "Antar ke hotel"] },
       en: { name: "Honda Vario 125", tagline: "The budget pick for short trips and narrow streets.", includes: ["2 helmets", "Automatic", "Delivered to hotel"] },
@@ -326,7 +326,7 @@ export const copy = {
     "hero.cta1": "Lihat paket tour", "hero.cta2": "Konsultasi gratis",
     "hero.resp": "Dibalas < 10 menit · 07.00–21.00 WITA",
     "hero.card.kicker": "Rencana perjalanan", "hero.card.title": "Ubud & Nusa Penida",
-    "hero.card.meta": "4 hari 3 malam · 2 dewasa", "hero.card.price": "Rp 2.600.000",
+    "hero.card.meta": "2 hari · 2 dewasa", "hero.card.price": "Rp 3.200.000",
     "hero.card.status": "Konfirmasi dalam 1 jam", "hero.card.cta": "Lihat rincian",
     "stats.a": "Mulai beroperasi", "stats.b": "paket tour", "stats.c": "rating rata-rata", "stats.d": "tur privat",
     "trust.1": "Jemput & antar hotel", "trust.2": "Pemandu berlisensi HPI", "trust.3": "Batal gratis 48 jam", "trust.4": "Harga dalam Rupiah",
@@ -444,7 +444,7 @@ export const copy = {
     "hero.cta1": "Browse tours", "hero.cta2": "Free consultation",
     "hero.resp": "Replies in under 10 min · 7am–9pm WITA",
     "hero.card.kicker": "Trip plan", "hero.card.title": "Ubud & Nusa Penida",
-    "hero.card.meta": "4 days · 2 adults", "hero.card.price": "IDR 2,600,000",
+    "hero.card.meta": "2 days · 2 adults", "hero.card.price": "IDR 3,200,000",
     "hero.card.status": "Confirmed within 1 hour", "hero.card.cta": "See details",
     "stats.a": "Operating since", "stats.b": "tour packages", "stats.c": "average rating", "stats.d": "private tours",
     "trust.1": "Hotel pickup & drop-off", "trust.2": "HPI-licensed guides", "trust.3": "Free cancellation 48h", "trust.4": "Priced in Rupiah",
@@ -561,7 +561,7 @@ export const copy = {
     "hero.cta1": "Touren ansehen", "hero.cta2": "Kostenlose Beratung",
     "hero.resp": "Antwort in unter 10 Min. · 07–21 Uhr WITA",
     "hero.card.kicker": "Reiseplan", "hero.card.title": "Ubud & Nusa Penida",
-    "hero.card.meta": "4 Tage · 2 Erwachsene", "hero.card.price": "IDR 2.600.000",
+    "hero.card.meta": "2 Tage · 2 Erwachsene", "hero.card.price": "IDR 3.200.000",
     "hero.card.status": "Bestätigung innerhalb 1 Stunde", "hero.card.cta": "Details ansehen",
     "stats.a": "In Betrieb seit", "stats.b": "Tour-Pakete", "stats.c": "Durchschnittsbewertung", "stats.d": "private Touren",
     "trust.1": "Abholung am Hotel", "trust.2": "HPI-lizenzierte Guides", "trust.3": "Kostenlose Stornierung 48 h", "trust.4": "Preise in Rupiah",
@@ -678,7 +678,7 @@ export const copy = {
     "hero.cta1": "Voir les circuits", "hero.cta2": "Conseil gratuit",
     "hero.resp": "Réponse en moins de 10 min · 7h–21h WITA",
     "hero.card.kicker": "Programme", "hero.card.title": "Ubud & Nusa Penida",
-    "hero.card.meta": "4 jours · 2 adultes", "hero.card.price": "IDR 2 600 000",
+    "hero.card.meta": "2 jours · 2 adultes", "hero.card.price": "IDR 3 200 000",
     "hero.card.status": "Confirmé sous 1 heure", "hero.card.cta": "Voir le détail",
     "stats.a": "En service depuis", "stats.b": "circuits", "stats.c": "note moyenne", "stats.d": "circuits privés",
     "trust.1": "Prise en charge à l'hôtel", "trust.2": "Guides agréés HPI", "trust.3": "Annulation gratuite 48 h", "trust.4": "Tarifs en roupies",
@@ -795,7 +795,7 @@ export const copy = {
     "hero.cta1": "Ver tours", "hero.cta2": "Asesoría gratuita",
     "hero.resp": "Respuesta en menos de 10 min · 07:00–21:00 WITA",
     "hero.card.kicker": "Plan de viaje", "hero.card.title": "Ubud y Nusa Penida",
-    "hero.card.meta": "4 días · 2 adultos", "hero.card.price": "IDR 2.600.000",
+    "hero.card.meta": "2 días · 2 adultos", "hero.card.price": "IDR 3.200.000",
     "hero.card.status": "Confirmado en 1 hora", "hero.card.cta": "Ver detalles",
     "stats.a": "En servicio desde", "stats.b": "tours", "stats.c": "valoración media", "stats.d": "tours privados",
     "trust.1": "Recogida en el hotel", "trust.2": "Guías titulados HPI", "trust.3": "Cancelación gratis 48 h", "trust.4": "Precios en rupias",
@@ -912,7 +912,7 @@ export const copy = {
     "hero.cta1": "Смотреть туры", "hero.cta2": "Бесплатная консультация",
     "hero.resp": "Ответ менее чем за 10 мин · 07:00–21:00 WITA",
     "hero.card.kicker": "План поездки", "hero.card.title": "Убуд и Нуса-Пенида",
-    "hero.card.meta": "4 дня · 2 взрослых", "hero.card.price": "IDR 2 600 000",
+    "hero.card.meta": "2 дня · 2 взрослых", "hero.card.price": "IDR 3 200 000",
     "hero.card.status": "Подтверждение в течение часа", "hero.card.cta": "Подробнее",
     "stats.a": "Работаем с", "stats.b": "туров", "stats.c": "средняя оценка", "stats.d": "приватных туров",
     "trust.1": "Трансфер из отеля", "trust.2": "Гиды с лицензией HPI", "trust.3": "Бесплатная отмена за 48 ч", "trust.4": "Цены в рупиях",
