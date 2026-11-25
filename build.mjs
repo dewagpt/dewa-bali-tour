@@ -389,8 +389,8 @@ function head(lang, meta) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>${esc(meta.title)}</title>
-  <meta name="description" content="${esc(meta.desc)}">
+  <title${meta.titleKey ? ` data-copy="${meta.titleKey}"` : ""}>${esc(meta.title)}</title>
+  <meta name="description" content="${esc(meta.desc)}"${meta.descKey ? ` data-copy="${meta.descKey}" data-copy-attr="content"` : ""}>
   <link rel="canonical" href="${site.url}${path}">
   ${alts}
   <link rel="alternate" hreflang="x-default" href="${site.url}/en/">
@@ -439,14 +439,14 @@ function nav(lang, t, isHome = true) {
   /* Seksi #reviews selalu ada (lihat reviewsSection), jadi tautannya juga
      selalu tampil — tidak boleh bergantung pada ada/tidaknya ulasan asli. */
   const links = [
-    [H("#tours"), t("nav.tours")],
-    [`/${lang}/rental/`, t("nav.rental")],
-    [H("#why"), t("nav.why")],
-    [H("#reviews"), t("nav.reviews")],
-    [H("#faq"), t("nav.faq")],
-    [H("#contact"), t("nav.contact")],
+    [H("#tours"), "nav.tours", t("nav.tours")],
+    [`/${lang}/rental/`, "nav.rental", t("nav.rental")],
+    [H("#why"), "nav.why", t("nav.why")],
+    [H("#reviews"), "nav.reviews", t("nav.reviews")],
+    [H("#faq"), "nav.faq", t("nav.faq")],
+    [H("#contact"), "nav.contact", t("nav.contact")],
   ]
-    .map(([href, label]) => `<a href="${href}">${esc(label)}</a>`)
+    .map(([href, key, label]) => `<a href="${href}" data-copy="${key}">${esc(label)}</a>`)
     .join("");
   const langItems = langs
     .map(
@@ -462,17 +462,17 @@ function nav(lang, t, isHome = true) {
     </a>
     <nav class="nav-links" aria-label="Primary">${links}</nav>
     <div class="nav-actions">
-      <button class="icon-btn" type="button" data-theme-toggle aria-label="${esc(t("ui.theme"))}" title="${esc(t("ui.theme"))}">
+      <button class="icon-btn" type="button" data-theme-toggle aria-label="${esc(t("ui.theme"))}" title="${esc(t("ui.theme"))}" data-copy="ui.theme" data-copy-attr="aria-label title">
         <span class="theme-sun">${I.sun}</span><span class="theme-moon">${I.moon}</span>
       </button>
       <div class="lang" data-lang>
-        <button class="icon-btn lang-btn" type="button" aria-expanded="false" aria-haspopup="menu" aria-label="${esc(t("nav.lang"))}">
+        <button class="icon-btn lang-btn" type="button" aria-expanded="false" aria-haspopup="menu" aria-label="${esc(t("nav.lang"))}" data-copy="nav.lang" data-copy-attr="aria-label">
           <span class="lang-cur">${L.short}</span><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
         </button>
         <div class="lang-menu glass">${langItems}</div>
       </div>
-      <a class="btn btn-primary btn-sm nav-cta" href="${wa(t("wa.hi") + " " + t("wa.nav"))}" target="_blank" rel="noopener">${I.wa}<span>${esc(t("nav.book"))}</span></a>
-      <button class="icon-btn burger" type="button" aria-expanded="false" aria-controls="sheet" aria-label="${esc(t("ui.menu"))}">
+      <a class="btn btn-primary btn-sm nav-cta" href="${wa(t("wa.hi") + " " + t("wa.nav"))}" data-wa-static="wa.nav" target="_blank" rel="noopener">${I.wa}<span data-copy="nav.book">${esc(t("nav.book"))}</span></a>
+      <button class="icon-btn burger" type="button" aria-expanded="false" aria-controls="sheet" aria-label="${esc(t("ui.menu"))}" data-copy="ui.menu" data-copy-attr="aria-label">
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
       </button>
     </div>
@@ -483,7 +483,7 @@ function nav(lang, t, isHome = true) {
     <div class="sheet-lang">${langs
       .map((l) => `<a href="/${l.code}/" ${l.code === lang ? 'aria-current="true"' : ""}>${l.short}</a>`)
       .join("")}</div>
-    <a class="btn btn-primary btn-block" href="${wa(t("wa.hi") + " " + t("wa.nav"))}" target="_blank" rel="noopener">${I.wa}<span>${esc(t("nav.book"))}</span></a>
+    <a class="btn btn-primary btn-block" href="${wa(t("wa.hi") + " " + t("wa.nav"))}" data-wa-static="wa.nav" target="_blank" rel="noopener">${I.wa}<span data-copy="nav.book">${esc(t("nav.book"))}</span></a>
   </div>
 </header>`;
 }
@@ -493,25 +493,25 @@ function hero(lang, t) {
   return `<section class="hero" id="top">
   <div class="hero-grid">
     <div class="hero-copy">
-      <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(s("hero.eyebrow"))}</span>
-      <h1 class="display">${s("hero.title")}</h1>
-      <p class="lede">${esc(s("hero.sub"))}</p>
+      <span class="eyebrow"><span class="eyebrow-dot"></span><span data-copy="hero.eyebrow">${esc(s("hero.eyebrow"))}</span></span>
+      <h1 class="display" data-copy="hero.title" data-copy-html="1">${s("hero.title")}</h1>
+      <p class="lede" data-copy="hero.sub">${esc(s("hero.sub"))}</p>
       <div class="hero-cta">
-        <a class="btn btn-primary" href="#tours">${esc(s("hero.cta1"))}${I.arrow}</a>
-        <a class="btn btn-glass" href="#contact">${I.chat}${esc(s("hero.cta2"))}</a>
+        <a class="btn btn-primary" href="#tours"><span data-copy="hero.cta1">${esc(s("hero.cta1"))}</span>${I.arrow}</a>
+        <a class="btn btn-glass" href="#contact">${I.chat}<span data-copy="hero.cta2">${esc(s("hero.cta2"))}</span></a>
       </div>
       ${
         reviewsOn
           ? `<div class="proof">
         <div class="proof-text">
           <div class="stars">${stars5}</div>
-          <span>${esc(ratingText(lang))} / 5 · ${num(REVIEWS, lang)} ${esc(t("reviews.eyebrow"))}</span>
-          <span class="muted">${esc(s("hero.resp"))}</span>
+          <span>${esc(ratingText(lang))} / 5 · ${num(REVIEWS, lang)} <span data-copy="reviews.eyebrow">${esc(t("reviews.eyebrow"))}</span></span>
+          <span class="muted" data-copy="hero.resp">${esc(s("hero.resp"))}</span>
         </div>
       </div>`
           : `<div class="proof">
         <div class="proof-text">
-          <span>${esc(s("hero.resp"))}</span>
+          <span data-copy="hero.resp">${esc(s("hero.resp"))}</span>
         </div>
       </div>`
       }
@@ -529,12 +529,12 @@ function hero(lang, t) {
               : ""
           }${art("temple", "hero", { sunX: 318, sunY: 74 })}</div>
           <div class="win-info">
-            <span class="mini-kicker">${esc(s("hero.card.kicker"))}</span>
-            <h2 class="win-h">${esc(s("hero.card.title"))}</h2>
-            <p class="muted">${esc(s("hero.card.meta"))}</p>
+            <span class="mini-kicker" data-copy="hero.card.kicker">${esc(s("hero.card.kicker"))}</span>
+            <h2 class="win-h" data-copy="hero.card.title">${esc(s("hero.card.title"))}</h2>
+            <p class="muted" data-copy="hero.card.meta">${esc(s("hero.card.meta"))}</p>
             <div class="win-foot">
-              <strong>${esc(s("hero.card.price"))}</strong>
-              <span class="badge badge-ok"><span class="pulse"></span>${esc(s("hero.card.status"))}</span>
+              <strong data-copy="hero.card.price">${esc(s("hero.card.price"))}</strong>
+              <span class="badge badge-ok"><span class="pulse"></span><span data-copy="hero.card.status">${esc(s("hero.card.status"))}</span></span>
             </div>
           </div>
         </div>
@@ -543,11 +543,11 @@ function hero(lang, t) {
         reviewsOn
           ? `<div class="float-chip chip-rating glass">
         <span class="chip-star">${I.star}</span>
-        <div><strong>${ratingText(lang)}</strong><span>${num(REVIEWS, lang)} ${esc(t("reviews.eyebrow"))}</span></div>
+        <div><strong>${ratingText(lang)}</strong><span>${num(REVIEWS, lang)} <span data-copy="reviews.eyebrow">${esc(t("reviews.eyebrow"))}</span></span></div>
       </div>`
           : ""
       }
-      <div class="float-chip chip-trust glass">${I.shield}<span>${esc(s("trust.2"))}</span></div>
+      <div class="float-chip chip-trust glass">${I.shield}<span data-copy="trust.2">${esc(s("trust.2"))}</span></div>
     </div>
   </div>
   <ul class="trust-row glass" aria-label="Highlights">
@@ -570,7 +570,7 @@ function stats(lang, t) {
       ${items
         .map(
           (it) =>
-            `<div class="stat"><strong${it.cls ? ` class="${it.cls}"` : ""}>${esc(it.v)}</strong><span>${esc(t(it.k))}</span></div>`
+            `<div class="stat"><strong${it.cls ? ` class="${it.cls}"` : ""}>${esc(it.v)}</strong><span data-copy="${it.k}">${esc(t(it.k))}</span></div>`
         )
         .join("")}
     </div>
@@ -579,10 +579,10 @@ function stats(lang, t) {
 
 function toursSection(lang, t) {
   const cats = [
-    ["all", t("tours.all")],
-    ["culture", t("tours.culture")],
-    ["adventure", t("tours.adventure")],
-    ["island", t("tours.island")],
+    ["all", "tours.all", t("tours.all")],
+    ["culture", "tours.culture", t("tours.culture")],
+    ["adventure", "tours.adventure", t("tours.adventure")],
+    ["island", "tours.island", t("tours.island")],
   ];
   const cards = tours
     .map((tr) => {
@@ -604,11 +604,11 @@ function toursSection(lang, t) {
           <ul class="ticks">${c.includes.map((inc) => `<li>${I.check}<span>${esc(inc)}</span></li>`).join("")}</ul>
           <div class="tour-foot">
             <div class="price">
-              <span class="price-from">${esc(t("tours.from"))}</span>
+              <span class="price-from" data-copy="tours.from">${esc(t("tours.from"))}</span>
               <strong>${esc(money(tr.price, lang))}</strong>
-              <span class="price-per">${lang === "id" ? esc(t("tours.per")) : `${esc(t("tours.per"))} · ${usd(tr.price)}`}</span>
+              <span class="price-per">${lang === "id" ? esc(t("tours.per")) : `<span data-copy="tours.per">${esc(t("tours.per"))}</span> · ${usd(tr.price)}`}</span>
             </div>
-            <a class="btn btn-glass btn-sm" href="${wa(bookMsg)}" target="_blank" rel="noopener">${I.wa}<span>${esc(t("tours.book"))}</span></a>
+            <a class="btn btn-glass btn-sm" href="${wa(bookMsg)}" target="_blank" rel="noopener">${I.wa}<span data-copy="tours.book">${esc(t("tours.book"))}</span></a>
           </div>
         </div>
       </article>`;
@@ -618,20 +618,20 @@ function toursSection(lang, t) {
   return `<section class="section" id="tours">
   <div class="wrap">
     <header class="sec-head" data-reveal>
-      <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("tours.eyebrow"))}</span>
-      <h2 class="display-2">${esc(t("tours.title"))}</h2>
-      <p class="sec-sub">${esc(t("tours.sub"))}</p>
+      <span class="eyebrow"><span class="eyebrow-dot"></span><span data-copy="tours.eyebrow">${esc(t("tours.eyebrow"))}</span></span>
+      <h2 class="display-2" data-copy="tours.title">${esc(t("tours.title"))}</h2>
+      <p class="sec-sub" data-copy="tours.sub">${esc(t("tours.sub"))}</p>
     </header>
-    <div class="filters" role="group" aria-label="${esc(t("tours.eyebrow"))}">
+    <div class="filters" role="group" aria-label="${esc(t("tours.eyebrow"))}" data-copy="tours.eyebrow" data-copy-attr="aria-label">
       ${cats
         .map(
-          ([k, label], i) =>
-            `<button class="filter${i === 0 ? " is-active" : ""}" type="button" data-filter="${k}" aria-pressed="${i === 0}">${esc(label)}</button>`
+          ([k, key, label], i) =>
+            `<button class="filter${i === 0 ? " is-active" : ""}" type="button" data-filter="${k}" aria-pressed="${i === 0}" data-copy="${key}">${esc(label)}</button>`
         )
         .join("")}
     </div>
     <div class="tour-grid" id="tour-grid">${cards}</div>
-    <p class="note">${esc(t("tours.note"))} <span class="note-strong">${esc(t("tours.groupNote"))}</span></p>
+    <p class="note"><span data-copy="tours.note">${esc(t("tours.note"))}</span> <span class="note-strong"><span data-copy="tours.groupNote">${esc(t("tours.groupNote"))}</span></span></p>
   </div>
 </section>`;
 }
@@ -641,17 +641,17 @@ function whySection(lang, t) {
   return `<section class="section" id="why">
   <div class="wrap">
     <header class="sec-head" data-reveal>
-      <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("why.eyebrow"))}</span>
-      <h2 class="display-2">${esc(t("why.title"))}</h2>
-      <p class="sec-sub">${esc(t("why.sub"))}</p>
+      <span class="eyebrow"><span class="eyebrow-dot"></span><span data-copy="why.eyebrow">${esc(t("why.eyebrow"))}</span></span>
+      <h2 class="display-2" data-copy="why.title">${esc(t("why.title"))}</h2>
+      <p class="sec-sub" data-copy="why.sub">${esc(t("why.sub"))}</p>
     </header>
     <div class="feature-grid">
       ${[1, 2, 3, 4]
         .map(
           (i) => `<article class="card feature glass" data-reveal>
             <span class="feature-ico">${icons[i - 1]}</span>
-            <h3>${esc(t(`why.f${i}t`))}</h3>
-            <p>${esc(t(`why.f${i}d`))}</p>
+            <h3 data-copy="why.f${i}t">${esc(t(`why.f${i}t`))}</h3>
+            <p data-copy="why.f${i}d">${esc(t(`why.f${i}d`))}</p>
           </article>`
         )
         .join("")}
@@ -673,17 +673,17 @@ function stepsSection(lang, t) {
   return `<section class="section" id="steps">
   <div class="wrap">
     <header class="sec-head" data-reveal>
-      <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("steps.eyebrow"))}</span>
-      <h2 class="display-2">${esc(t("steps.title"))}</h2>
-      <p class="sec-sub">${esc(t("steps.sub"))}</p>
+      <span class="eyebrow"><span class="eyebrow-dot"></span><span data-copy="steps.eyebrow">${esc(t("steps.eyebrow"))}</span></span>
+      <h2 class="display-2" data-copy="steps.title">${esc(t("steps.title"))}</h2>
+      <p class="sec-sub" data-copy="steps.sub">${esc(t("steps.sub"))}</p>
     </header>
     <ol class="step-grid">
       ${[1, 2, 3]
         .map(
           (i) => `<li class="card step glass" data-reveal>
             <span class="step-num">0${i}</span>
-            <h3>${esc(t(`steps.${i}t`))}</h3>
-            <p>${esc(t(`steps.${i}d`))}</p>
+            <h3 data-copy="steps.${i}t">${esc(t(`steps.${i}t`))}</h3>
+            <p data-copy="steps.${i}d">${esc(t(`steps.${i}d`))}</p>
           </li>`
         )
         .join("")}
@@ -701,9 +701,9 @@ function reviewsSection(lang, t) {
     return `<section class="section" id="reviews">
   <div class="wrap">
     <header class="sec-head" data-reveal>
-      <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("reviews.eyebrow"))}</span>
-      <h2 class="display-2">${esc(t("reviews.title"))}</h2>
-      <p class="sec-sub">${esc(t("reviews.sub"))}</p>
+      <span class="eyebrow"><span class="eyebrow-dot"></span><span data-copy="reviews.eyebrow">${esc(t("reviews.eyebrow"))}</span></span>
+      <h2 class="display-2" data-copy="reviews.title">${esc(t("reviews.title"))}</h2>
+      <p class="sec-sub" data-copy="reviews.sub">${esc(t("reviews.sub"))}</p>
     </header>
     <div class="review-grid" data-n="${Math.min(3, TESTIMONIALS.length)}" data-reveal>
       ${TESTIMONIALS.slice(0, 3)
@@ -728,20 +728,20 @@ function reviewsSection(lang, t) {
   return `<section class="section" id="reviews">
   <div class="wrap">
     <header class="sec-head" data-reveal>
-      <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("reviews.eyebrow"))}</span>
-      <h2 class="display-2">${esc(t("reviews.title"))}</h2>
-      <p class="sec-sub">${esc(t("reviews.sub"))}</p>
+      <span class="eyebrow"><span class="eyebrow-dot"></span><span data-copy="reviews.eyebrow">${esc(t("reviews.eyebrow"))}</span></span>
+      <h2 class="display-2" data-copy="reviews.title">${esc(t("reviews.title"))}</h2>
+      <p class="sec-sub" data-copy="reviews.sub">${esc(t("reviews.sub"))}</p>
     </header>
     <div class="first-guest glass" data-reveal>
       <div class="first-guest-copy">
-        <p>${esc(t("reviews.empty"))}</p>
-        <a class="btn btn-primary" href="${wa(t("wa.hi") + " " + t("reviews.cta"))}" target="_blank" rel="noopener">${I.wa}<span>${esc(t("reviews.cta"))}</span></a>
+        <p data-copy="reviews.empty">${esc(t("reviews.empty"))}</p>
+        <a class="btn btn-primary" href="${wa(t("wa.hi") + " " + t("reviews.cta"))}" data-wa-static="reviews.cta" target="_blank" rel="noopener">${I.wa}<span data-copy="reviews.cta">${esc(t("reviews.cta"))}</span></a>
       </div>
       <ul class="first-guest-facts">
-        <li>${I.shield}<span>${esc(t("trust.2"))}</span></li>
-        <li>${I.pin}<span>${esc(t("trust.1"))}</span></li>
-        <li>${I.clock}<span>${esc(t("trust.3"))}</span></li>
-        <li>${I.chat}<span>${esc(t("trust.4"))}</span></li>
+        <li>${I.shield}<span data-copy="trust.2">${esc(t("trust.2"))}</span></li>
+        <li>${I.pin}<span data-copy="trust.1">${esc(t("trust.1"))}</span></li>
+        <li>${I.clock}<span data-copy="trust.3">${esc(t("trust.3"))}</span></li>
+        <li>${I.chat}<span data-copy="trust.4">${esc(t("trust.4"))}</span></li>
       </ul>
     </div>
   </div>
@@ -752,16 +752,16 @@ function faqSection(lang, t) {
   return `<section class="section" id="faq">
   <div class="wrap wrap-narrow">
     <header class="sec-head" data-reveal>
-      <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("faq.eyebrow"))}</span>
-      <h2 class="display-2">${esc(t("faq.title"))}</h2>
-      <p class="sec-sub">${esc(t("faq.sub"))}</p>
+      <span class="eyebrow"><span class="eyebrow-dot"></span><span data-copy="faq.eyebrow">${esc(t("faq.eyebrow"))}</span></span>
+      <h2 class="display-2" data-copy="faq.title">${esc(t("faq.title"))}</h2>
+      <p class="sec-sub" data-copy="faq.sub">${esc(t("faq.sub"))}</p>
     </header>
     <div class="faq-list">
       ${[1, 2, 3, 4, 5]
         .map(
           (i) => `<details class="faq glass" ${i === 1 ? "open" : ""} data-reveal>
-            <summary><span>${esc(t(`faq.${i}q`))}</span><span class="faq-ico">${I.plus}</span></summary>
-            <div class="faq-body"><p>${esc(t(`faq.${i}a`))}</p></div>
+            <summary><span data-copy="faq.${i}q">${esc(t(`faq.${i}q`))}</span><span class="faq-ico">${I.plus}</span></summary>
+            <div class="faq-body"><p data-copy="faq.${i}a">${esc(t(`faq.${i}a`))}</p></div>
           </details>`
         )
         .join("")}
@@ -775,13 +775,13 @@ function ctaSection(lang, t) {
   <div class="wrap">
     <div class="cta-band glass" data-reveal>
       <div class="cta-glow" aria-hidden="true"></div>
-      <h2 class="display-2">${esc(t("cta.title"))}</h2>
-      <p>${esc(t("cta.sub"))}</p>
+      <h2 class="display-2" data-copy="cta.title">${esc(t("cta.title"))}</h2>
+      <p data-copy="cta.sub">${esc(t("cta.sub"))}</p>
       <div class="cta-actions">
-        <a class="btn btn-primary btn-lg" href="${wa(t("wa.hi") + " " + t("cta.sub"))}" target="_blank" rel="noopener">${I.wa}<span>${esc(t("cta.button"))}</span></a>
+        <a class="btn btn-primary btn-lg" href="${wa(t("wa.hi") + " " + t("cta.sub"))}" data-wa-static="cta.sub" target="_blank" rel="noopener">${I.wa}<span data-copy="cta.button">${esc(t("cta.button"))}</span></a>
         <a class="btn btn-glass btn-lg" href="mailto:${site.email}">${I.mail}<span>${esc(site.email)}</span></a>
       </div>
-      <p class="cta-note">${esc(t("cta.note"))}</p>
+      <p class="cta-note" data-copy="cta.note">${esc(t("cta.note"))}</p>
     </div>
   </div>
 </section>`;
@@ -795,17 +795,17 @@ function contactSection(lang, t) {
   return `<section class="section" id="contact">
   <div class="wrap">
     <header class="sec-head" data-reveal>
-      <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("contact.eyebrow"))}</span>
-      <h2 class="display-2">${esc(t("contact.title"))}</h2>
-      <p class="sec-sub">${esc(t("contact.sub"))}</p>
+      <span class="eyebrow"><span class="eyebrow-dot"></span><span data-copy="contact.eyebrow">${esc(t("contact.eyebrow"))}</span></span>
+      <h2 class="display-2" data-copy="contact.title">${esc(t("contact.title"))}</h2>
+      <p class="sec-sub" data-copy="contact.sub">${esc(t("contact.sub"))}</p>
     </header>
     <div class="contact-grid">
       <aside class="card info glass" data-reveal>
         <ul class="info-list">
-          <li><span class="info-ico">${I.pin}</span><div><strong>${esc(t("contact.office"))}</strong><span data-f="address">${esc(t("contact.address"))}</span></div></li>
-          <li><span class="info-ico">${I.clock}</span><div><strong data-f="hours">${esc(t("contact.hours"))}</strong><span class="ok"><span class="pulse"></span>${esc(t("contact.resp"))}</span></div></li>
-          <li><span class="info-ico">${I.phone}</span><div><strong>${esc(t("contact.phone"))}</strong><a href="tel:+${site.phoneE164}">${esc(site.phoneDisplay)}</a></div></li>
-          <li><span class="info-ico">${I.mail}</span><div><strong>${esc(t("contact.email"))}</strong><a href="mailto:${site.email}">${esc(site.email)}</a></div></li>
+          <li><span class="info-ico">${I.pin}</span><div><strong data-copy="contact.office">${esc(t("contact.office"))}</strong><span class="info-ico">${I.pin}</span><div><strong>${esc(t("contact.office"))}</strong><span data-f="address" data-copy="contact.address">${esc(t("contact.address"))}</span></div></li>
+          <li><span class="info-ico">${I.clock}</span><div><strong data-f="hours">${esc(t("contact.hours"))}</strong><span class="ok"><span class="pulse"></span><span data-copy="contact.resp">${esc(t("contact.resp"))}</span></span></div></li>
+          <li><span class="info-ico">${I.phone}</span><div><strong data-copy="contact.phone">${esc(t("contact.phone"))}</strong><a href="tel:+${site.phoneE164}">${esc(site.phoneDisplay)}</a></div></li>
+          <li><span class="info-ico">${I.mail}</span><div><strong data-copy="contact.email">${esc(t("contact.email"))}</strong><a href="mailto:${site.email}">${esc(site.email)}</a></div></li>
         </ul>
         <div class="info-social">
           <a href="${site.instagram}" target="_blank" rel="noopener">Instagram</a>
@@ -814,17 +814,17 @@ function contactSection(lang, t) {
       </aside>
       <form class="card form glass" id="book-form" data-reveal novalidate>
         <div class="field-row">
-          <label class="field"><span>${esc(t("contact.name"))}</span><input name="name" type="text" autocomplete="name" required placeholder="${attr(t("contact.namePh"))}"></label>
-          <label class="field"><span>${esc(t("contact.wa"))}</span><input name="wa" type="tel" autocomplete="tel" required placeholder="+62 812 3456 7890"></label>
+          <label class="field"><span data-copy="contact.name">${esc(t("contact.name"))}</span><input name="name" type="text" autocomplete="name" required placeholder="${attr(t("contact.namePh"))}" data-copy="contact.namePh" data-copy-attr="placeholder"></label>
+          <label class="field"><span data-copy="contact.wa">${esc(t("contact.wa"))}</span><input name="wa" type="tel" autocomplete="tel" required placeholder="+62 812 3456 7890"></label>
         </div>
         <div class="field-row">
-          <label class="field"><span>${esc(t("contact.date"))}</span><input name="date" type="date" required></label>
-          <label class="field"><span>${esc(t("contact.guests"))}</span><input name="guests" type="number" min="1" max="30" value="2" required></label>
+          <label class="field"><span data-copy="contact.date">${esc(t("contact.date"))}</span><input name="date" type="date" required></label>
+          <label class="field"><span data-copy="contact.guests">${esc(t("contact.guests"))}</span><input name="guests" type="number" min="1" max="30" value="2" required></label>
         </div>
-        <label class="field"><span>${esc(t("contact.tour"))}</span><select name="tour">${options.join("")}</select></label>
-        <label class="field"><span>${esc(t("contact.msg"))}</span><textarea name="msg" rows="3" placeholder="${attr(t("contact.msgPh"))}"></textarea></label>
-        <button class="btn btn-primary btn-block" type="submit">${I.wa}<span>${esc(t("contact.submit"))}</span></button>
-        <p class="form-note">${esc(t("contact.privacy"))}</p>
+        <label class="field"><span data-copy="contact.tour">${esc(t("contact.tour"))}</span><select name="tour">${options.join("")}</select></label>
+        <label class="field"><span data-copy="contact.msg">${esc(t("contact.msg"))}</span><textarea name="msg" rows="3" placeholder="${attr(t("contact.msgPh"))}" data-copy="contact.msgPh" data-copy-attr="placeholder"></textarea></label>
+        <button class="btn btn-primary btn-block" type="submit">${I.wa}<span data-copy="contact.submit">${esc(t("contact.submit"))}</span></button>
+        <p class="form-note" data-copy="contact.privacy">${esc(t("contact.privacy"))}</p>
       </form>
     </div>
   </div>
@@ -837,61 +837,61 @@ function footer(lang, t) {
     <div class="foot-grid">
       <div class="foot-brand">
         <a class="brand" href="#top">${brandMark(36)}<span class="brand-text"><strong>${esc(site.name)}</strong><span>${esc(SINCE(lang))}</span></span></a>
-        <p>${esc(t("footer.tagline"))}</p>
+        <p data-copy="footer.tagline">${esc(t("footer.tagline"))}</p>
         <div class="foot-social">
           <a href="${site.instagram}" target="_blank" rel="noopener" aria-label="Instagram">IG</a>
           <a href="${site.facebook}" target="_blank" rel="noopener" aria-label="Facebook">FB</a>
-          <a href="${wa(t("wa.hi"))}" target="_blank" rel="noopener" aria-label="WhatsApp">WA</a>
+          <a href="${wa(t("wa.hi"))}" data-wa-static="" target="_blank" rel="noopener" aria-label="WhatsApp">WA</a>
         </div>
       </div>
-      <nav class="foot-col" aria-label="${esc(t("footer.explore"))}">
-        <h4>${esc(t("footer.explore"))}</h4>
-        <a href="#tours">${esc(t("nav.tours"))}</a>
-        <a href="#why">${esc(t("nav.why"))}</a>
-        <a href="#reviews">${esc(t("nav.reviews"))}</a>
-        <a href="#faq">${esc(t("nav.faq"))}</a>
+      <nav class="foot-col" aria-label="${esc(t("footer.explore"))}" data-copy="footer.explore" data-copy-attr="aria-label">
+        <h4 data-copy="footer.explore">${esc(t("footer.explore"))}</h4>
+        <a href="#tours" data-copy="nav.tours">${esc(t("nav.tours"))}</a>
+        <a href="#why" data-copy="nav.why">${esc(t("nav.why"))}</a>
+        <a href="#reviews" data-copy="nav.reviews">${esc(t("nav.reviews"))}</a>
+        <a href="#faq" data-copy="nav.faq">${esc(t("nav.faq"))}</a>
       </nav>
-      <nav class="foot-col" aria-label="${esc(t("footer.company"))}">
-        <h4>${esc(t("footer.company"))}</h4>
-        <a href="#contact">${esc(t("footer.about"))}</a>
-        <button type="button" data-dialog="privacy">${esc(t("footer.privacy"))}</button>
-        <button type="button" data-dialog="terms">${esc(t("footer.terms"))}</button>
+      <nav class="foot-col" aria-label="${esc(t("footer.company"))}" data-copy="footer.company" data-copy-attr="aria-label">
+        <h4 data-copy="footer.company">${esc(t("footer.company"))}</h4>
+        <a href="#contact" data-copy="footer.about">${esc(t("footer.about"))}</a>
+        <button type="button" data-dialog="privacy" data-copy="footer.privacy">${esc(t("footer.privacy"))}</button>
+        <button type="button" data-dialog="terms" data-copy="footer.terms">${esc(t("footer.terms"))}</button>
       </nav>
       <div class="foot-col">
-        <h4>${esc(t("footer.contact"))}</h4>
+        <h4 data-copy="footer.contact">${esc(t("footer.contact"))}</h4>
         <a href="tel:+${site.phoneE164}">${esc(site.phoneDisplay)}</a>
         <a href="mailto:${site.email}">${esc(site.email)}</a>
-        <span class="foot-addr" data-f="address">${esc(t("contact.address"))}</span>
+        <span class="foot-addr" data-f="address" data-copy="contact.address">${esc(t("contact.address"))}</span>
         <span class="foot-addr" data-f="hours">${esc(t("contact.hours"))}</span>
       </div>
     </div>
     <div class="foot-bottom">
-      <span>${esc(t("footer.rights"))}</span>
-      <span>${esc(t("footer.made"))}</span>
-      ${site.showAdminLink ? `<a class="foot-admin" href="${ADMIN_PATH}">${esc(t("footer.admin"))}</a>` : ""}
+      <span data-copy="footer.rights">${esc(t("footer.rights"))}</span>
+      <span data-copy="footer.made">${esc(t("footer.made"))}</span>
+      ${site.showAdminLink ? `<a class="foot-admin" href="${ADMIN_PATH}" data-copy="footer.admin">${esc(t("footer.admin"))}</a>` : ""}
     </div>
   </div>
 </footer>
 <dialog class="dlg glass" id="dlg-privacy">
-  <form method="dialog"><button class="icon-btn dlg-x" aria-label="${esc(t("ui.close"))}">✕</button></form>
-  <h3>${esc(t("legal.privacyTitle"))}</h3>
-  <p>${esc(t("legal.privacyBody"))}</p>
+  <form method="dialog"><button class="icon-btn dlg-x" aria-label="${esc(t("ui.close"))}" data-copy="ui.close" data-copy-attr="aria-label">✕</button></form>
+  <h3 data-copy="legal.privacyTitle">${esc(t("legal.privacyTitle"))}</h3>
+  <p data-copy="legal.privacyBody" data-copy-html="1">${esc(t("legal.privacyBody"))}</p>
 </dialog>
 <dialog class="dlg glass" id="dlg-terms">
-  <form method="dialog"><button class="icon-btn dlg-x" aria-label="${esc(t("ui.close"))}">✕</button></form>
-  <h3>${esc(t("legal.termsTitle"))}</h3>
-  <p>${esc(t("legal.termsBody"))}</p>
+  <form method="dialog"><button class="icon-btn dlg-x" aria-label="${esc(t("ui.close"))}" data-copy="ui.close" data-copy-attr="aria-label">✕</button></form>
+  <h3 data-copy="legal.termsTitle">${esc(t("legal.termsTitle"))}</h3>
+  <p data-copy="legal.termsBody" data-copy-html="1">${esc(t("legal.termsBody"))}</p>
 </dialog>
-<a class="fab-glass" href="${wa(t("wa.hi") + " " + t("wa.nav"))}" target="_blank" rel="noopener" aria-label="${esc(t("cta.button"))}">${I.wa}<span>${esc(t("nav.book"))}</span></a>`;
+<a class="fab-glass" href="${wa(t("wa.hi") + " " + t("wa.nav"))}" data-wa-static="wa.nav" target="_blank" rel="noopener" aria-label="${esc(t("cta.button"))}" data-copy="cta.button" data-copy-attr="aria-label">${I.wa}<span data-copy="nav.book">${esc(t("nav.book"))}</span></a>`;
 }
 
 function page(lang) {
   const t = T(lang);
-  const doc = `${head(lang, { title: t("meta.title"), desc: t("meta.desc") })}
+  const doc = `${head(lang, { title: t("meta.title"), desc: t("meta.desc"), titleKey: "meta.title", descKey: "meta.desc" })}
 <body data-lang="${lang}" data-page="home" data-rev="${DATA_REV}" data-wa="${site.phoneE164}"
       data-wa-hi="${attr(t("wa.hi"))}" data-wa-want="${attr(t("wa.want"))}"
       data-wa-for="${attr(t("wa.for"))}" data-wa-ppl="${attr(t("wa.ppl"))}"
-      data-wa-date="${attr(t("wa.onDate"))}" data-wa-name="${attr(t("wa.nameIs"))}">
+      data-wa-date="${attr(t("wa.onDate"))}" data-wa-name="${attr(t("wa.nameIs"))}" data-wa-copy="wa.hi,wa.want,wa.for,wa.ppl,wa.onDate,wa.nameIs">
 <a class="skip" href="#main">Skip to content</a>
 <div class="aura" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><span class="grain"></span></div>
 ${nav(lang, t)}
@@ -936,11 +936,11 @@ function templates(lang, t) {
       <ul class="ticks" data-f="includes"></ul>
       <div class="tour-foot">
         <div class="price">
-          <span class="price-from">${esc(t("tours.from"))}</span>
+          <span class="price-from" data-copy="tours.from">${esc(t("tours.from"))}</span>
           <strong data-f="price"></strong>
           <span class="price-per" data-f="per"></span>
         </div>
-        <a class="btn btn-glass btn-sm" data-f="wa" target="_blank" rel="noopener">${I.wa}<span>${esc(t("tours.book"))}</span></a>
+        <a class="btn btn-glass btn-sm" data-f="wa" target="_blank" rel="noopener">${I.wa}<span data-copy="tours.book">${esc(t("tours.book"))}</span></a>
       </div>
     </div>
   </article>
@@ -958,11 +958,11 @@ function templates(lang, t) {
       <ul class="ticks" data-f="includes"></ul>
       <div class="tour-foot">
         <div class="price">
-          <span class="price-from">${esc(t("rental.from"))}</span>
+          <span class="price-from" data-copy="rental.from">${esc(t("rental.from"))}</span>
           <strong data-f="price"></strong>
           <span class="price-per" data-f="per"></span>
         </div>
-        <a class="btn btn-glass btn-sm" data-f="wa" target="_blank" rel="noopener">${I.wa}<span>${esc(t("rental.book"))}</span></a>
+        <a class="btn btn-glass btn-sm" data-f="wa" target="_blank" rel="noopener">${I.wa}<span data-copy="rental.book">${esc(t("rental.book"))}</span></a>
       </div>
     </div>
   </article>
@@ -979,7 +979,7 @@ function rentalCard(r, lang, t) {
   <div class="tour-art">
     ${r.photo && fs.existsSync(path.join(ROOT, r.photo)) ? `<img class="tour-photo" src="${r.photo}" alt="" loading="lazy" decoding="async">` : ""}${art(r.art, "r-" + r.id)}
     <span class="chip-cat glass-pill">${esc(t("rental." + r.type))}</span>
-    <span class="chip-dur glass-pill">${I.clock}<span>${esc(money(r.price, lang))} ${esc(t("rental.perDay"))}</span></span>
+    <span class="chip-dur glass-pill">${I.clock}<span>${esc(money(r.price, lang))} <span data-copy="rental.perDay">${esc(t("rental.perDay"))}</span></span></span>
   </div>
   <div class="tour-body">
     <h3>${esc(c.name)}</h3>
@@ -987,11 +987,11 @@ function rentalCard(r, lang, t) {
     <ul class="ticks">${c.includes.map((i) => `<li>${I.check}<span>${esc(i)}</span></li>`).join("")}</ul>
     <div class="tour-foot">
       <div class="price">
-        <span class="price-from">${esc(t("rental.from"))}</span>
+        <span class="price-from" data-copy="rental.from">${esc(t("rental.from"))}</span>
         <strong>${esc(money(r.price, lang))}</strong>
-        <span class="price-per">${esc(t("rental.perDay"))}${lang === "id" ? "" : " · " + usd(r.price)}</span>
+        <span class="price-per"><span data-copy="rental.perDay">${esc(t("rental.perDay"))}</span>${lang === "id" ? "" : " · " + usd(r.price)}</span>
       </div>
-      <a class="btn btn-glass btn-sm" href="${wa(msg)}" target="_blank" rel="noopener">${I.wa}<span>${esc(t("rental.book"))}</span></a>
+      <a class="btn btn-glass btn-sm" href="${wa(msg)}" target="_blank" rel="noopener">${I.wa}<span data-copy="rental.book">${esc(t("rental.book"))}</span></a>
     </div>
   </div>
 </article>`;
@@ -1006,13 +1006,15 @@ function rentalPage(lang) {
   return `${head(lang, {
     title: t("rental.metaTitle"),
     desc: t("rental.metaDesc"),
+    titleKey: "rental.metaTitle",
+    descKey: "rental.metaDesc",
     path: `/${lang}/rental/`,
     alts: langs.map((l) => [l, `/${l.code}/rental/`]),
   })}
 <body data-lang="${lang}" data-page="rental" data-rev="${DATA_REV}" data-wa="${site.phoneE164}"
       data-wa-hi="${attr(t("wa.hi"))}" data-wa-want="${attr(t("wa.want"))}"
       data-wa-for="${attr(t("wa.for"))}" data-wa-ppl="${attr(t("wa.ppl"))}"
-      data-wa-date="${attr(t("wa.onDate"))}" data-wa-name="${attr(t("wa.nameIs"))}">
+      data-wa-date="${attr(t("wa.onDate"))}" data-wa-name="${attr(t("wa.nameIs"))}" data-wa-copy="wa.hi,wa.want,wa.for,wa.ppl,wa.onDate,wa.nameIs">
 <a class="skip" href="#main">Skip to content</a>
 <div class="aura" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i><span class="grain"></span></div>
 ${nav(lang, t, false)}
@@ -1020,22 +1022,22 @@ ${nav(lang, t, false)}
   <section class="hero" id="top">
     <div class="hero-grid">
       <div class="hero-copy">
-        <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("rental.eyebrow"))}</span>
-        <h1 class="display">${t("rental.title")}</h1>
-        <p class="lede">${esc(t("rental.sub"))}</p>
+        <span class="eyebrow"><span class="eyebrow-dot"></span><span data-copy="rental.eyebrow">${esc(t("rental.eyebrow"))}</span></span>
+        <h1 class="display" data-copy="rental.title" data-copy-html="1">${t("rental.title")}</h1>
+        <p class="lede" data-copy="rental.sub">${esc(t("rental.sub"))}</p>
         <div class="hero-cta">
-          <a class="btn btn-primary" href="#fleet">${esc(t("rental.cta1"))}${I.arrow}</a>
-          <a class="btn btn-glass" href="${wa(t("wa.hi") + " " + t("rental.cta2"))}" target="_blank" rel="noopener">${I.wa}${esc(t("rental.cta2"))}</a>
+          <a class="btn btn-primary" href="#fleet"><span data-copy="rental.cta1">${esc(t("rental.cta1"))}</span>${I.arrow}</a>
+          <a class="btn btn-glass" href="${wa(t("wa.hi") + " " + t("rental.cta2"))}" data-wa-static="rental.cta2" target="_blank" rel="noopener">${I.wa}<span data-copy="rental.cta2">${esc(t("rental.cta2"))}</span></a>
         </div>
         <ul class="mini-facts">
-          <li>${I.check}<span>${esc(t("rental.1t"))}</span></li>
-          <li>${I.check}<span>${esc(t("rental.3t"))}</span></li>
-          <li>${I.check}<span>${esc(t("rental.4t"))}</span></li>
+          <li>${I.check}<span data-copy="rental.1t">${esc(t("rental.1t"))}</span></li>
+          <li>${I.check}<span data-copy="rental.3t">${esc(t("rental.3t"))}</span></li>
+          <li>${I.check}<span data-copy="rental.4t">${esc(t("rental.4t"))}</span></li>
         </ul>
       </div>
       <div class="hero-visual">
         <div class="window glass">
-          <div class="win-bar">${dots}<span class="win-title">${esc(site.name)} · ${esc(t("rental.eyebrow"))}</span></div>
+          <div class="win-bar">${dots}<span class="win-title">${esc(site.name)} · <span data-copy="rental.eyebrow">${esc(t("rental.eyebrow"))}</span></span></div>
           <div class="win-body">
             <div class="win-art" data-hero="rental">${
               site.rentalHeroPhoto && heroSrc(site.rentalHeroPhoto)
@@ -1043,12 +1045,12 @@ ${nav(lang, t, false)}
                 : ""
             }${art("car", "rental-hero", { sunX: 306, sunY: 70 })}</div>
             <div class="win-info">
-              <span class="mini-kicker">${esc(t("rental.from"))}</span>
-              <h2 class="win-h">${esc(money(cheapest.price, lang))} <span class="win-unit">${esc(t("rental.perDay"))}</span></h2>
-              <p class="muted">${esc(t("rental.all"))} · ${esc(t("rental.car"))} &amp; ${esc(t("rental.bike"))}</p>
+              <span class="mini-kicker" data-copy="rental.from">${esc(t("rental.from"))}</span>
+              <h2 class="win-h">${esc(money(cheapest.price, lang))} <span class="win-unit"><span data-copy="rental.perDay">${esc(t("rental.perDay"))}</span></span></h2>
+              <p class="muted"><span data-copy="rental.all">${esc(t("rental.all"))}</span> · <span data-copy="rental.car">${esc(t("rental.car"))}</span> &amp; <span data-copy="rental.bike">${esc(t("rental.bike"))}</span></p>
               <div class="win-foot">
                 <strong data-f="hours">${esc(t("contact.hours"))}</strong>
-                <span class="badge badge-ok"><span class="pulse"></span>${esc(t("trust.1"))}</span>
+                <span class="badge badge-ok"><span class="pulse"></span><span data-copy="trust.1">${esc(t("trust.1"))}</span></span>
               </div>
             </div>
           </div>
@@ -1060,14 +1062,14 @@ ${nav(lang, t, false)}
   <section class="section" id="fleet">
     <div class="wrap">
       <header class="sec-head" data-reveal>
-        <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("rental.eyebrow"))}</span>
-        <h2 class="display-2">${esc(t("rental.cta1"))}</h2>
-        <p class="sec-sub">${esc(t("rental.note"))}</p>
+        <span class="eyebrow"><span class="eyebrow-dot"></span><span data-copy="rental.eyebrow">${esc(t("rental.eyebrow"))}</span></span>
+        <h2 class="display-2" data-copy="rental.cta1">${esc(t("rental.cta1"))}</h2>
+        <p class="sec-sub" data-copy="rental.note">${esc(t("rental.note"))}</p>
       </header>
-      <div class="filters" role="group" aria-label="${esc(t("rental.eyebrow"))}">
-        <button class="filter is-active" type="button" data-filter="all" aria-pressed="true">${esc(t("rental.all"))}</button>
-        <button class="filter" type="button" data-filter="car" aria-pressed="false">${esc(t("rental.car"))}</button>
-        <button class="filter" type="button" data-filter="bike" aria-pressed="false">${esc(t("rental.bike"))}</button>
+      <div class="filters" role="group" aria-label="${esc(t("rental.eyebrow"))}" data-copy="rental.eyebrow" data-copy-attr="aria-label">
+        <button class="filter is-active" type="button" data-filter="all" aria-pressed="true" data-copy="rental.all">${esc(t("rental.all"))}</button>
+        <button class="filter" type="button" data-filter="car" aria-pressed="false" data-copy="rental.car">${esc(t("rental.car"))}</button>
+        <button class="filter" type="button" data-filter="bike" aria-pressed="false" data-copy="rental.bike">${esc(t("rental.bike"))}</button>
       </div>
       <div class="tour-grid" id="rental-grid">${cards}</div>
     </div>
@@ -1076,17 +1078,17 @@ ${nav(lang, t, false)}
   <section class="section" id="terms">
     <div class="wrap">
       <header class="sec-head" data-reveal>
-        <span class="eyebrow"><span class="eyebrow-dot"></span>${esc(t("rental.termsTitle"))}</span>
-        <h2 class="display-2">${esc(t("rental.termsTitle"))}</h2>
-        <p class="sec-sub">${esc(t("rental.termsSub"))}</p>
+        <span class="eyebrow"><span class="eyebrow-dot"></span><span data-copy="rental.termsTitle">${esc(t("rental.termsTitle"))}</span></span>
+        <h2 class="display-2" data-copy="rental.termsTitle">${esc(t("rental.termsTitle"))}</h2>
+        <p class="sec-sub" data-copy="rental.termsSub">${esc(t("rental.termsSub"))}</p>
       </header>
       <div class="feature-grid">
         ${[1, 2, 3, 4]
           .map(
             (i) => `<article class="card feature glass" data-reveal>
               <span class="step-num">0${i}</span>
-              <h3>${esc(t(`rental.${i}t`))}</h3>
-              <p>${esc(t(`rental.${i}d`))}</p>
+              <h3 data-copy="rental.${i}t">${esc(t(`rental.${i}t`))}</h3>
+              <p data-copy="rental.${i}d">${esc(t(`rental.${i}d`))}</p>
             </article>`
           )
           .join("")}
@@ -1177,6 +1179,7 @@ ${ICON_LINKS}
       <button class="admin-tab is-active" data-tab="tours" role="tab" aria-selected="true">Paket Tour</button>
       <button class="admin-tab" data-tab="rentals" role="tab" aria-selected="false">Rental</button>
       <button class="admin-tab" data-tab="settings" role="tab" aria-selected="false">Pengaturan</button>
+      <button class="admin-tab" data-tab="copy" role="tab" aria-selected="false">Teks Halaman</button>
       <button class="admin-tab" data-tab="security" role="tab" aria-selected="false">Keamanan</button>
     </nav>
 
@@ -1374,6 +1377,41 @@ for (const l of langs) {
 const adminDir = path.join(DIST, ...ADMIN_DIR.split("/").filter(Boolean));
 fs.mkdirSync(adminDir, { recursive: true });
 fs.writeFileSync(path.join(adminDir, "index.html"), adminPage());
+
+/* ---------- kunci teks yang benar-benar dipakai ----------
+   Panel admin hanya boleh menampilkan teks yang muncul di halaman.
+   Kalau seluruh 182 kunci ditampilkan, separuhnya tidak berpengaruh
+   apa pun saat disunting — membingungkan. Daftar ini diambil dari HTML
+   hasil build, jadi otomatis ikut berubah kalau markup berubah. */
+{
+  const used = new Set();
+  const scan = (dir) => {
+    for (const name of fs.readdirSync(dir)) {
+      const p = path.join(dir, name);
+      if (fs.statSync(p).isDirectory()) scan(p);
+      else if (name.endsWith(".html")) {
+        const html = fs.readFileSync(p, "utf8");
+        for (const m of html.matchAll(/data-copy="([A-Za-z0-9_.]+)"/g)) used.add(m[1]);
+      }
+    }
+  };
+  scan(DIST);
+  /* Potongan pesan WhatsApp tidak punya elemen penanda (body hanya
+     boleh satu atribut data-copy), jadi ditambahkan manual. */
+  for (const k of ["wa.hi", "wa.want", "wa.for", "wa.ppl", "wa.onDate", "wa.nameIs"]) used.add(k);
+  const keys = [...used].sort();
+  const fnDir2 = path.join(ROOT, "functions", "_lib");
+  fs.mkdirSync(fnDir2, { recursive: true });
+  fs.writeFileSync(
+    path.join(fnDir2, "copykeys.js"),
+    `/* Dibuat otomatis oleh build.mjs — jangan disunting tangan.\n   Kunci teks halaman yang benar-benar dipakai markup. */\nexport const USED_COPY_KEYS = ${JSON.stringify(
+      keys,
+      null,
+      2
+    )};\n`
+  );
+  console.log(`  teks halaman yang bisa disunting: ${keys.length} kunci`);
+}
 
 /* seed + i18n untuk Cloudflare Functions (dibundel saat deploy) */
 const fnDir = path.join(ROOT, "functions", "_lib");

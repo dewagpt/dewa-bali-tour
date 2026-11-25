@@ -384,9 +384,111 @@
     grid.appendChild(frag);
   }
 
+  /* ---------------- teks halaman yang disunting admin ----------------
+     Halaman dibangun saat build, jadi teks aslinya sudah "terpanggang" di
+     HTML. Kalau admin menyunting teks di panel, server mengirim hanya
+     kunci yang berubah; kita timpa di sini supaya halaman ikut berubah
+     tanpa build ulang. Elemen ditandai data-copy saat build. */
+  /* Server hanya mengirim kunci yang diubah, jadi potongan pesan WhatsApp
+     yang tidak diubah harus diambil dari teks asli di halaman (snapshot
+     sekali saat muat). Tanpa ini tombol akan kehilangan bagian pesannya. */
+  function snapshotWa() {
+    const hi = document.body.dataset.waHi || "";
+    $$("[data-wa-static]").forEach((a) => {
+      let msg = "";
+      try {
+        msg = new URL(a.href).searchParams.get("text") || "";
+      } catch {
+        msg = "";
+      }
+      a.dataset.waBase = msg;
+      a.dataset.waSuffix = msg.startsWith(hi) ? msg.slice(hi.length).trim() : msg;
+    });
+  }
+  snapshotWa();
+
+  function applyCopy(c) {
+    if (!c || typeof c !== "object") return;
+    let touched = false;
+
+    $$("[data-copy]").forEach((el) => {
+      const key = el.dataset.copy;
+      const val = c[key];
+      if (typeof val !== "string" || !val) return;
+      touched = true;
+
+      /* Atribut (aria-label, placeholder, title) */
+      const attrName = el.dataset.copyAttr;
+      if (attrName) {
+        el.setAttribute(attrName, val);
+        return;
+      }
+
+      /* Teks yang memang berisi HTML terbatas (<em>, <strong>, <br>).
+         Hanya tag itu yang diizinkan — sisanya di-escape. */
+      if (el.dataset.copyHtml === "1") {
+        el.innerHTML = sanitizeInline(val);
+        return;
+      }
+
+      el.textContent = val;
+    });
+
+    /* Potongan pesan WhatsApp tidak punya elemen penanda sendiri (body
+       hanya boleh satu nilai), jadi kehadirannya juga dihitung sebagai
+       perubahan — kalau tidak, mengubah sapaan saja tidak akan
+       menyusun ulang tautan. */
+    const WA_KEYS = ["wa.hi", "wa.want", "wa.for", "wa.ppl", "wa.onDate", "wa.nameIs"];
+    const waChanged = WA_KEYS.some((k) => typeof c[k] === "string" && c[k]);
+
+    if (!touched && !waChanged) return;
+
+    /* Body menyimpan enam potongan pesan WhatsApp sekaligus — HTML hanya
+       mengizinkan satu atribut bernama sama, jadi kuncinya didaftar di
+       data-wa-copy lalu dipetakan ke data-wa-* sesuai urutan. */
+    const body = document.body;
+    if (body.dataset.waCopy) {
+      const attrs = ["waHi", "waWant", "waFor", "waPpl", "waDate", "waName"];
+      body.dataset.waCopy.split(",").forEach((key, i) => {
+        const val = c[key.trim()];
+        if (typeof val === "string" && val && attrs[i]) body.dataset[attrs[i]] = val;
+      });
+    }
+
+    /* Susun ulang tautan WhatsApp: sapaan dari teks baru (atau aslinya),
+       imbuhan dari teks baru (atau snapshot aslinya). */
+    const phone = body.dataset.wa;
+    if (!phone) return;
+    const hi = c["wa.hi"] || body.dataset.waHi || "";
+    $$("[data-wa-static]").forEach((a) => {
+      const suffixKey = a.dataset.waStatic;
+      const suffix = (suffixKey && c[suffixKey]) || a.dataset.waSuffix || "";
+      const msg = `${hi} ${suffix}`.trim();
+      a.href = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+    });
+  }
+
+  /* <em>/<strong>/<br> dipertahankan, tag lain dibuang jadi teks biasa. */
+  function sanitizeInline(html) {
+    const allowed = new Set(["EM", "STRONG", "B", "I", "BR"]);
+    const box = document.createElement("div");
+    box.innerHTML = String(html);
+    const walk = (node) => {
+      [...node.children].forEach((child) => {
+        walk(child);
+        if (!allowed.has(child.tagName)) {
+          child.replaceWith(...child.childNodes);
+        }
+      });
+    };
+    walk(box);
+    return box.innerHTML;
+  }
+
   function hydrate(data) {
     if (!data) return;
     applySettings(data.settings);
+    applyCopy(data.copy);
     if (document.getElementById("tour-grid")) {
       renderCards("tour-grid", "tpl-tour", data.tours, (t) => ({
         cat: t.cat,

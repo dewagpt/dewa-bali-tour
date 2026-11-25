@@ -4,6 +4,7 @@
    ============================================================ */
 
 import { copy, durationForms, langs, site } from "./content.js";
+import { USED_COPY_KEYS } from "./copykeys.js";
 import { DEFAULT_ADMIN_USER, DEFAULT_PASSWORD_HASH, sessionSecret } from "./config.js";
 import { hashPassword, timingSafeStrings, verifyPassword } from "./crypto.js";
 import { mailConfigured, resetEmailHtml, sendMail } from "./mail.js";
@@ -23,7 +24,7 @@ import {
 import { D1Store, ensureData, saveData } from "./store.js";
 import { EXT_BY_TYPE, MEDIA_KEY_RE, R2Media } from "./media.js";
 import { revOfAsync } from "./util.js";
-import { TRANSLATE_SHAPES, TRANSLATE_TARGETS, translateAll } from "./translate.js";
+import { TRANSLATE_SHAPES, TRANSLATE_TARGETS, translateAll, translateCopyAll } from "./translate.js";
 
 const ART = ["terrace", "island", "volcano", "temple", "river", "gate", "car", "bike"];
 const TOUR_CATS = ["culture", "adventure", "island"];
@@ -226,7 +227,22 @@ function validateSettings(input) {
 /* ---------------- data publik ---------------- */
 async function publicPayload(data, lang) {
   const L = langs.some((l) => l.code === lang) ? lang : "id";
-  const t = (k) => copy[L]?.[k] ?? copy.en[k] ?? k;
+
+  /* Teks halaman: dasar dari file konten, lalu ditimpa suntingan admin
+     (data.copy) bila ada. Hanya kunci yang benar-benar diubah yang
+     disimpan, jadi halaman tetap kecil. */
+  const overrides = data.copy && typeof data.copy === "object" ? data.copy : {};
+  const merged = { ...(copy[L] || {}), ...(overrides[L] || {}) };
+  const t = (k) => merged[k] ?? copy.en[k] ?? k;
+
+  /* Kirim hanya selisih terhadap teks bawaan supaya payload hemat. */
+  const copyOut = {};
+  if (overrides[L] && typeof overrides[L] === "object") {
+    for (const [k, v] of Object.entries(overrides[L])) {
+      if (typeof v === "string" && v && v !== copy[L]?.[k]) copyOut[k] = v;
+    }
+  }
+
   const rate = Number(site.usdRate) || 16200;
 
   const addr = data.settings.address;
@@ -290,8 +306,13 @@ async function publicPayload(data, lang) {
     };
   });
 
-  const rev = await revOfAsync({ settings: data.settings, tours: data.tours, rentals: data.rentals });
-  return { rev, lang: L, settings, tours, rentals };
+  const rev = await revOfAsync({
+    settings: settings,
+    tours: data.tours,
+    rentals: data.rentals,
+    copy: overrides[L] || null,
+  });
+  return { rev, lang: L, settings, tours, rentals, copy: copyOut };
 }
 
 /* ---------------- kredensial aktif ---------------- */
@@ -538,6 +559,8 @@ export async function handleApi(request, env = {}) {
     const { auth: _hidden, ...safe } = data;
     return json({
       ...safe,
+      copyBase: copy,
+      copyKeys: USED_COPY_KEYS,
       rev,
       security: {
         user: auth.user,
@@ -651,7 +674,8 @@ export async function handleApi(request, env = {}) {
     }
 
     const kind = String(body.kind || "tour");
-    if (!TRANSLATE_SHAPES[kind]) return fail("Jenis konten tidak dikenal.");
+    /* "copy" = teks halaman; bentuknya dinamis sehingga tidak lewat TRANSLATE_SHAPES. */
+    if (kind !== "copy" && !TRANSLATE_SHAPES[kind]) return fail("Jenis konten tidak dikenal.");
 
     const source = body.source && typeof body.source === "object" ? body.source : null;
     if (!source) return fail("Teks bahasa Indonesia belum diisi.");
@@ -661,6 +685,19 @@ export async function handleApi(request, env = {}) {
       ? body.targets.filter((c) => TRANSLATE_TARGETS.includes(c))
       : TRANSLATE_TARGETS;
     if (!targets.length) return fail("Tidak ada bahasa tujuan yang valid.");
+
+    /* kind "copy" memakai bentuk dinamis (banyak kunci pendek), bukan shape tetap. */
+    if (kind === "copy") {
+      try {
+        const translations = await translateCopyAll(env.AI || env.__ai, source, targets);
+        return json({ ok: true, translations });
+      } catch (err) {
+        return json(
+          { error: `Terjemahan gagal: ${err && err.message ? err.message : "tidak diketahui"}` },
+          502
+        );
+      }
+    }
 
     try {
       const translations = await translateAll(env.AI || env.__ai, source, shape, targets);
@@ -686,6 +723,105 @@ export async function handleApi(request, env = {}) {
     data.settings = res.value;
     const saved = await saveData(store, data);
     return json({ ok: true, settings: saved.settings });
+  }
+
+  /* --- teks halaman (copy): simpan suntingan ---
+     Admin hanya mengirim teks bahasa Indonesia yang berubah beserta
+     terjemahannya. Hanya kunci yang berbeda dari teks bawaan yang
+     disimpan, sehingga data tetap ringkas dan bisa "direset" dengan
+     mengirim nilai yang sama seperti aslinya. */
+  if (path === "admin/copy" && method === "PUT") {
+    let body;
+    try {
+      body = await readJson(request);
+    } catch {
+      return fail("Permintaan tidak valid.");
+    }
+    if (!body || typeof body !== "object") return fail("Permintaan tidak valid.");
+
+    const data = await ensureData(store);
+    const next = data.copy && typeof data.copy === "object" ? data.copy : {};
+
+    /* Simpan nilai lama sebelum ditimpa — dipakai untuk mengetahui kunci
+       mana yang teks Indonesianya benar-benar berubah. */
+    const prevId = { ...(next.id || {}) };
+
+    /* Bagian yang dikirim: { id: {kunci: teks}, en: {...}, ... } */
+    const incoming = body.copy && typeof body.copy === "object" ? body.copy : body;
+
+    /* Kunci yang direset di bahasa Indonesia juga harus dibuang dari
+       bahasa lain. Terjemahan selalu dibuat dari teks Indonesia, jadi
+       membiarkannya berarti halaman Inggris menampilkan versi lama
+       sementara halaman Indonesia sudah kembali ke bawaan. */
+    const resetKeys = new Set();
+    const idBag = incoming.id;
+    if (idBag && typeof idBag === "object") {
+      for (const [k, v] of Object.entries(idBag)) {
+        if (!(k in (copy.id || {}))) continue;
+        if (typeof v !== "string") continue;
+        const text = v.slice(0, 4000);
+        if (!text.trim() || text === copy.id[k]) resetKeys.add(k);
+      }
+    }
+
+    for (const [lang, bag] of Object.entries(incoming)) {
+      if (!langs.some((l) => l.code === lang)) continue;
+      if (!bag || typeof bag !== "object") continue;
+      const target = { ...(next[lang] || {}) };
+      for (const [k, v] of Object.entries(bag)) {
+        if (!(k in (copy[lang] || {}))) continue; // kunci tak dikenal
+        if (typeof v !== "string") continue;
+        const text = v.slice(0, 4000);
+        /* Kosong atau sama dengan teks bawaan = hapus override. */
+        if (!text.trim() || text === copy[lang][k]) delete target[k];
+        else target[k] = text;
+      }
+      if (Object.keys(target).length) next[lang] = target;
+      else delete next[lang];
+    }
+
+    /* Sapu sisa terjemahan untuk kunci yang direset. */
+    if (resetKeys.size) {
+      for (const lang of langs) {
+        if (lang.code === "id") continue;
+        const bag = next[lang.code];
+        if (!bag) continue;
+        for (const k of resetKeys) delete bag[k];
+        if (!Object.keys(bag).length) delete next[lang.code];
+      }
+    }
+
+    /* Kunci yang teks Indonesianya berubah tapi tidak dikirimi
+       terjemahan baru: buang terjemahan lamanya. Kalau dibiarkan,
+       halaman Inggris menampilkan kalimat yang sudah tidak ada di
+       halaman Indonesia — isi salah yang lebih buruk daripada kembali
+       ke teks bawaan. */
+    const changedKeys = new Set();
+    if (idBag && typeof idBag === "object") {
+      for (const [k, v] of Object.entries(idBag)) {
+        if (!(k in (copy.id || {})) || typeof v !== "string") continue;
+        if (!v.trim() || v === copy.id[k]) continue;
+        if (resetKeys.has(k)) continue;
+        if (v.slice(0, 4000) !== (prevId[k] ?? copy.id[k])) changedKeys.add(k);
+      }
+    }
+    if (changedKeys.size) {
+      for (const lang of langs) {
+        if (lang.code === "id") continue;
+        const sent = incoming[lang.code];
+        const bag = next[lang.code];
+        if (!bag) continue;
+        for (const k of changedKeys) {
+          if (sent && typeof sent === "object" && typeof sent[k] === "string" && sent[k].trim()) continue;
+          delete bag[k];
+        }
+        if (!Object.keys(bag).length) delete next[lang.code];
+      }
+    }
+
+    data.copy = next;
+    const saved = await saveData(store, data);
+    return json({ ok: true, copy: saved.copy || {} });
   }
 
   /* --- CRUD tour --- */

@@ -174,5 +174,97 @@ export async function translateAll(ai, source, shape, targets) {
   return out;
 }
 
+/* ------------------------------------------------------------
+   Teks halaman (copy) — 180+ kunci pendek: judul, subjudul,
+   label tombol, FAQ, dan sebagainya. Bentuknya dinamis, jadi
+   tidak memakai TOUR_SHAPE. Diterjemahkan per bongkahan kecil
+   supaya model tidak terpotong dan hasilnya tetap rapi.
+   ------------------------------------------------------------ */
+
+/** Token yang WAJIB muncul kembali persis sama di hasil terjemahan. */
+const TOKEN_RE = /\{[a-z]+\}|<\/?(?:em|strong|b|i|br)\s*\/?>/gi;
+const COPY_CHUNK = 18;
+const COPY_MAX_LEN = 2000;
+
+export function copyTokens(text) {
+  return String(text ?? "").match(TOKEN_RE) || [];
+}
+
+function sysPromptCopy(targetName, keys) {
+  return `You translate website copy for a Bali tour and car-rental company from Indonesian into ${targetName}.
+
+Return ONLY a single valid JSON object. No markdown fences, no explanation, no text before or after.
+The object must have EXACTLY these keys, unchanged, each with a string value:
+${keys.map((k) => `  "${k}": "..."`).join("\n")}
+
+Rules:
+- Translate the VALUE only. Never translate or alter the KEYS.
+- Keep every placeholder token exactly as written: {pct}, {n}, {save}, {price}, {guests}, {total}. Never translate or remove them.
+- Keep inline HTML tags exactly as written (<em>, </em>, <strong>, </strong>, <br>). Translate only the words between them.
+- Keep these names exactly as written: ${PROPER_NOUNS.join(", ")}.
+- Keep numbers, "Rp", percentages, and clock times unchanged.
+- Never add facts, prices, promises, ratings, review counts, guest counts, or years of experience that are not in the source text.
+- If a value is an empty string, return an empty string.
+- Write natural, marketing-quality ${targetName} that a native speaker would put on a real travel website. Never translate word-for-word.
+- Output must be parseable by JSON.parse().`.trim();
+}
+
+/**
+ * Terjemahkan sekumpulan kunci teks halaman untuk satu bahasa.
+ * @param {object} ai     binding Workers AI
+ * @param {object} source objek { kunci: "teks Indonesia" }
+ * @param {string} target kode bahasa tujuan
+ * @returns {Promise<object>} objek { kunci: "teks terjemahan" }
+ */
+export async function translateCopy(ai, source, target) {
+  if (!ai) throw new Error("Fitur terjemahan otomatis belum aktif di server ini.");
+  const name = LANG_NAMES[target];
+  if (!name) throw new Error(`Bahasa tujuan tidak dikenal: ${target}`);
+
+  const keys = Object.keys(source || {}).filter((k) => typeof source[k] === "string");
+  const out = {};
+
+  for (let i = 0; i < keys.length; i += COPY_CHUNK) {
+    const slice = keys.slice(i, i + COPY_CHUNK);
+    const payload = {};
+    for (const k of slice) payload[k] = String(source[k]).slice(0, COPY_MAX_LEN);
+
+    const res = await ai.run(MODEL, {
+      messages: [
+        { role: "system", content: sysPromptCopy(name, slice) },
+        { role: "user", content: `Translate this JSON from Indonesian to ${name}:\n${JSON.stringify(payload, null, 2)}` },
+      ],
+      max_tokens: 2400,
+      temperature: 0.15,
+    });
+
+    let parsed;
+    try {
+      parsed = extractJson(res?.response ?? res);
+    } catch {
+      parsed = {};
+    }
+
+    for (const k of slice) {
+      const raw = asText(parsed?.[k], COPY_MAX_LEN);
+      const src = payload[k];
+      /* Jaga integritas: kalau token/placeholder hilang, pakai teks sumber
+         daripada menampilkan teks rusak (mis. "Diskon rombongan % untuk peserta"). */
+      const needs = copyTokens(src);
+      const lost = needs.some((tok) => !raw.includes(tok));
+      out[k] = raw && !lost ? raw : src;
+    }
+  }
+
+  return out;
+}
+
+/** Terjemahkan teks halaman ke beberapa bahasa sekaligus. */
+export async function translateCopyAll(ai, source, targets) {
+  const out = {};
+  for (const code of targets) out[code] = await translateCopy(ai, source, code);
+  return out;
+}
+
 export const TRANSLATE_SHAPES = { tour: TOUR_SHAPE, rental: RENTAL_SHAPE, settings: SETTINGS_SHAPE };
 export const TRANSLATE_TARGETS = ["en", "de", "fr", "es", "ru"];

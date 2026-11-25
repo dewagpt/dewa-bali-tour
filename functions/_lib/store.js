@@ -3,6 +3,7 @@
    Lokal    : functions/_lib/store.node.js (file JSON) — diimpor hanya oleh dev server. */
 
 import { seed } from "./seed.js";
+import { copy as copyBase } from "./content.js";
 
 export class D1Store {
   constructor(db) {
@@ -51,12 +52,34 @@ function mergeLang(item, baseItem) {
   return { ...item, t };
 }
 
+/** Samakan bentuk bagian `copy` (teks halaman yang disunting admin).
+    Hanya kunci yang isinya teks non-kosong yang disimpan, dan hanya untuk
+    bahasa yang dikenal — supaya data asing tidak pernah ikut tersimpan. */
+function normalizeCopy(value, base) {
+  const out = {};
+  if (!value || typeof value !== "object") return out;
+  for (const lang of Object.keys(value)) {
+    if (!base[lang]) continue; // bahasa tidak dikenal
+    const src = value[lang];
+    if (!src || typeof src !== "object") continue;
+    const bag = {};
+    for (const [k, v] of Object.entries(src)) {
+      if (!(k in base[lang])) continue; // kunci tidak dikenal
+      if (typeof v !== "string" || !v.trim()) continue;
+      bag[k] = v.slice(0, 4000);
+    }
+    if (Object.keys(bag).length) out[lang] = bag;
+  }
+  return out;
+}
+
 /** Normalisasi agar data lama/tidak lengkap tetap aman dipakai. */
 export function normalize(data) {
   const base = structuredClone(seed);
   if (!data || typeof data !== "object") return base;
   return {
     ...(data.auth && data.auth.passwordHash ? { auth: data.auth } : {}),
+    copy: normalizeCopy(data.copy, copyBase),
     settings: { ...base.settings, ...(data.settings || {}) },
     tours: (Array.isArray(data.tours) ? data.tours : base.tours).map((t) => {
       const merged = mergeLang(t, base.tours.find((b) => b.id === t.id));

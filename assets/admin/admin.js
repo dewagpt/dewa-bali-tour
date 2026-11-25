@@ -242,6 +242,7 @@ function renderPanel() {
   if (state.tab === "tours") return renderList("tours");
   if (state.tab === "rentals") return renderList("rentals");
   if (state.tab === "settings") return renderSettings();
+  if (state.tab === "copy") return renderCopy();
   if (state.tab === "security") return renderSecurity();
 }
 
@@ -903,6 +904,204 @@ function wireHeroFields(form) {
         fileInput.value = "";
       }
     });
+  });
+}
+
+/* ---------------- teks halaman ----------------
+   Semua teks yang tampil di situs (judul, subjudul, label tombol, FAQ)
+   bisa disunting di sini. Cukup tulis versi Indonesia lalu klik
+   "Terjemahkan otomatis" — versi 5 bahasa lain dibuat dari teks itu,
+   jadi tidak perlu mengetik ulang per bahasa. */
+
+/* Kelompok supaya panel tidak jadi satu daftar panjang tanpa arah. */
+const COPY_GROUPS = [
+  ["hero", "Bagian atas (hero)"],
+  ["nav", "Menu navigasi"],
+  ["stats", "Angka ringkas"],
+  ["trust", "Baris kepercayaan"],
+  ["tours", "Bagian paket tour"],
+  ["why", "Kenapa pilih kami"],
+  ["steps", "Cara pesan"],
+  ["reviews", "Bagian ulasan"],
+  ["faq", "Tanya jawab"],
+  ["cta", "Ajakan WhatsApp"],
+  ["contact", "Kontak"],
+  ["rental", "Halaman rental"],
+  ["footer", "Footer"],
+  ["wa", "Pesan WhatsApp otomatis (dipakai semua tombol)"],
+  ["meta", "Judul & deskripsi tab browser (SEO)"],
+  ["legal", "Halaman privasi & syarat"],
+  ["ui", "Label antarmuka kecil"],
+];
+
+/* Label ramah untuk kunci yang namanya kurang jelas. */
+const COPY_LABELS = {
+  "meta.title": "Judul tab browser (SEO)",
+  "meta.desc": "Deskripsi mesin pencari (SEO)",
+  "hero.title": "Judul utama (boleh pakai <em>)",
+  "hero.sub": "Paragraf di bawah judul",
+  "hero.eyebrow": "Label kecil di atas judul",
+  "hero.cta1": "Tombol utama",
+  "hero.cta2": "Tombol kedua",
+  "hero.resp": "Catatan kecil di bawah tombol",
+  "hero.card.kicker": "Kartu hero — label",
+  "hero.card.title": "Kartu hero — judul",
+  "hero.card.meta": "Kartu hero — keterangan",
+  "hero.card.price": "Kartu hero — harga",
+  "hero.card.status": "Kartu hero — status",
+  "tours.note": "Catatan di bawah daftar paket",
+  "tours.groupNote": "Catatan diskon rombongan ({pct} {n} {save})",
+  "rental.note": "Catatan di halaman rental",
+  "footer.rights": "Baris hak cipta",
+  "footer.tagline": "Slogan di footer",
+  "wa.hi": "Sapaan pembuka",
+  "wa.want": "“Saya mau pesan…”",
+  "wa.for": "“untuk…”",
+  "wa.ppl": "“orang”",
+  "wa.onDate": "“pada tanggal”",
+  "wa.nameIs": "“Nama saya”",
+};
+
+function copyLabel(key) {
+  if (COPY_LABELS[key]) return COPY_LABELS[key];
+  const tail = key.split(".").slice(1).join(".");
+  return tail || key;
+}
+
+function renderCopy() {
+  const base = state.data.copyBase || {};
+  const saved = state.data.copy || {};
+  const idBase = base.id || {};
+
+  /* Hanya kunci yang benar-benar dipakai halaman — menyunting teks yang
+     tidak pernah tampil hanya membingungkan. Daftarnya dibuat build. */
+  const keys = Array.isArray(state.data.copyKeys) && state.data.copyKeys.length
+    ? state.data.copyKeys
+    : [...new Set(Object.values(base).flatMap((bag) => Object.keys(bag || {})))];
+  const all = [...keys].sort();
+
+  const groups = COPY_GROUPS.map(([prefix, title]) => {
+    const list = all.filter((k) => k.split(".")[0] === prefix);
+    if (!list.length) return "";
+    const fields = list
+      .map((k) => {
+        const raw = idBase[k] ?? "";
+        const isLong = raw.length > 90;
+        const val = saved.id?.[k] ?? raw;
+        const tag = isLong ? "textarea" : "input";
+        const input =
+          tag === "textarea"
+            ? `<textarea name="${esc(k)}" rows="3" data-copy-key="${esc(k)}">${esc(val)}</textarea>`
+            : `<input name="${esc(k)}" type="text" value="${esc(val)}" data-copy-key="${esc(k)}">`;
+        const edited = saved.id?.[k] && saved.id[k] !== raw ? ' <span class="badge-soft">diubah</span>' : "";
+        return `<label class="field field-full"><span>${esc(copyLabel(k))}${edited}</span>${input}</label>`;
+      })
+      .join("");
+    return `<h3 class="settings-sub">${esc(title)}</h3><div class="settings-grid">${fields}</div>`;
+  }).join("");
+
+  const editedCount = Object.keys(saved.id || {}).filter((k) => saved.id[k] !== idBase[k]).length;
+
+  panel.innerHTML = `
+    <div class="panel-head">
+      <div>
+        <h2>Teks halaman</h2>
+        <p>Ubah teks situs dalam bahasa Indonesia saja — versi 5 bahasa lain dibuat otomatis.</p>
+      </div>
+    </div>
+    <form id="copy-form">
+      <p class="hint">${editedCount ? `${editedCount} teks sudah diubah dari bawaan.` : "Semua teks masih memakai bawaan."}
+        Kosongkan sebuah kolom untuk mengembalikannya ke teks bawaan.</p>
+      ${groups}
+      <div class="translate-bar">
+        <button type="button" class="btn btn-glass btn-sm" data-translate-copy>Terjemahkan otomatis dari bahasa Indonesia</button>
+        <label class="translate-auto">
+          <input type="checkbox" data-auto-translate checked>
+          <span>Otomatis saat Simpan</span>
+        </label>
+        <span class="translate-note" data-translate-note hidden></span>
+      </div>
+      <div class="editor-foot"><button type="submit" class="btn btn-primary">Simpan teks</button></div>
+    </form>`;
+
+  const form = $("#copy-form");
+
+  /* Kumpulkan hanya teks yang berbeda dari bawaan → payload kecil. */
+  const collect = () => {
+    const out = {};
+    $$("[data-copy-key]", form).forEach((el) => {
+      const k = el.dataset.copyKey;
+      const v = el.value;
+      const raw = idBase[k] ?? "";
+      if (v !== raw) out[k] = v; // kosong = hapus override
+    });
+    return out;
+  };
+
+  form.querySelector("[data-translate-copy]")?.addEventListener("click", async () => {
+    const note = form.querySelector("[data-translate-note]");
+    const btn = form.querySelector("[data-translate-copy]");
+    const changed = collect();
+    const source = {};
+    for (const [k, v] of Object.entries(changed)) if (v.trim()) source[k] = v;
+    if (!Object.keys(source).length) {
+      note.hidden = false;
+      note.textContent = "Belum ada teks yang diubah.";
+      return;
+    }
+    btn.disabled = true;
+    note.hidden = false;
+    note.textContent = "Menerjemahkan…";
+    try {
+      const tr = await fetchTranslations("copy", source);
+      const n = Object.keys(tr).length;
+      note.textContent = `Siap: terjemahan ${n} bahasa dibuat. Klik “Simpan teks”.`;
+      state._copyTranslations = tr;
+    } catch (err) {
+      note.textContent = `Gagal: ${err.message}`;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = form.querySelector('button[type="submit"]');
+    const note = form.querySelector("[data-translate-note]");
+    const changed = collect();
+    const payload = { copy: { id: changed } };
+
+    const auto = form.querySelector("[data-auto-translate]");
+    if (auto && auto.checked && Object.keys(changed).length) {
+      const source = {};
+      for (const [k, v] of Object.entries(changed)) if (v.trim()) source[k] = v;
+      if (Object.keys(source).length) {
+        btn.disabled = true;
+        btn.textContent = "Menerjemahkan…";
+        note.hidden = false;
+        note.textContent = "Menerjemahkan…";
+        try {
+          const tr = await fetchTranslations("copy", source);
+          payload.copy = { id: changed, ...tr };
+        } catch (err) {
+          note.textContent = `Terjemahan gagal: ${err.message}. Teks belum disimpan.`;
+          btn.disabled = false;
+          btn.textContent = "Simpan teks";
+          return;
+        }
+      }
+    }
+
+    btn.disabled = true;
+    try {
+      await api("/admin/copy", { method: "PUT", body: payload });
+      toast("Teks halaman disimpan");
+      await loadData();
+    } catch (err) {
+      toast(err.message);
+      btn.disabled = false;
+      btn.textContent = "Simpan teks";
+    }
   });
 }
 
