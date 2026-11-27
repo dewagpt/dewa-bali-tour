@@ -42,13 +42,14 @@ export const seed = {
           "includes": [
             "Sawah terasering Tegalalang",
             "Monkey Forest & Pura Saraswati",
-            "Air terjun Tegenungan"
+            "Air terjun Tegenungan",
+            "Tiket masuk, parkir & air mineral"
           ],
           "description": "Seharian menyusuri jantung budaya Bali: sawah terasering Tegalalang, hutan monyet, Pura Saraswati, dan air terjun Tegenungan. Pemandu lokal menunjukkan sudut yang jarang dilewati turis.",
           "itinerary": [
             "08.00 — Jemput di hotel",
             "09.30 — Sawah terasering Tegalalang",
-            "12.00 — Makan siang di Ubud",
+            "12.00 — Makan siang di Ubud (bayar sendiri)",
             "13.30 — Monkey Forest & Pura Saraswati",
             "16.00 — Air terjun Tegenungan"
           ]
@@ -59,13 +60,14 @@ export const seed = {
           "includes": [
             "Tegalalang rice terraces",
             "Monkey Forest & Saraswati Temple",
-            "Tegenungan waterfall"
+            "Tegenungan waterfall",
+            "Entrance tickets, parking & bottled water"
           ],
           "description": "A full day through the cultural heart of Bali: the Tegalalang rice terraces, the Monkey Forest, Saraswati Temple and Tegenungan waterfall. Your local guide shows you corners most tourists miss.",
           "itinerary": [
             "08:00 — Hotel pickup",
             "09:30 — Tegalalang rice terraces",
-            "12:00 — Lunch in Ubud",
+            "12:00 — Lunch in Ubud (own cost)",
             "13:30 — Monkey Forest & Saraswati Temple",
             "16:00 — Tegenungan waterfall"
           ]
@@ -76,13 +78,14 @@ export const seed = {
           "includes": [
             "Tegalalang-Reisterrassen",
             "Affenwald & Saraswati-Tempel",
-            "Tegenungan-Wasserfall"
+            "Tegenungan-Wasserfall",
+            "Eintritte, Parken & Wasser"
           ],
           "description": "Ein ganzer Tag im kulturellen Herzen Balis: Tegalalang-Reisterrassen, Affenwald, Saraswati-Tempel und Tegenungan-Wasserfall. Ihr lokaler Guide zeigt Ihnen Ecken, die die meisten Touristen verpassen.",
           "itinerary": [
             "08:00 — Abholung am Hotel",
             "09:30 — Reisterrassen Tegalalang",
-            "12:00 — Mittagessen in Ubud",
+            "12:00 — Mittagessen in Ubud (auf eigene Kosten)",
             "13:30 — Affenwald & Saraswati-Tempel",
             "16:00 — Tegenungan-Wasserfall"
           ]
@@ -93,13 +96,14 @@ export const seed = {
           "includes": [
             "Rizières de Tegalalang",
             "Forêt des singes & temple Saraswati",
-            "Cascade de Tegenungan"
+            "Cascade de Tegenungan",
+            "Billets d'entrée, parking & eau"
           ],
           "description": "Une journée entière au cœur culturel de Bali : rizières de Tegalalang, forêt des singes, temple Saraswati et cascade de Tegenungan. Votre guide local vous montre des coins que les touristes manquent.",
           "itinerary": [
             "08h00 — Prise en charge à l'hôtel",
             "09h30 — Rizières de Tegalalang",
-            "12h00 — Déjeuner à Ubud",
+            "12h00 — Déjeuner à Ubud (à vos frais)",
             "13h30 — Forêt des singes & temple Saraswati",
             "16h00 — Cascade de Tegenungan"
           ]
@@ -110,13 +114,14 @@ export const seed = {
           "includes": [
             "Arrozales de Tegalalang",
             "Bosque de los monos & templo Saraswati",
-            "Cascada de Tegenungan"
+            "Cascada de Tegenungan",
+            "Entradas, aparcamiento y agua"
           ],
           "description": "Un día completo por el corazón cultural de Bali: arrozales de Tegalalang, bosque de los monos, templo Saraswati y cascada de Tegenungan. Tu guía local te enseña rincones que casi nadie ve.",
           "itinerary": [
             "08:00 — Recogida en el hotel",
             "09:30 — Arrozales de Tegalalang",
-            "12:00 — Almuerzo en Ubud",
+            "12:00 — Almuerzo en Ubud (por tu cuenta)",
             "13:30 — Bosque de los monos y templo Saraswati",
             "16:00 — Cascada de Tegenungan"
           ]
@@ -127,13 +132,14 @@ export const seed = {
           "includes": [
             "Рисовые террасы Тегалаланг",
             "Лес обезьян и храм Сарасвати",
-            "Водопад Тегенунган"
+            "Водопад Тегенунган",
+            "Билеты, парковка и вода"
           ],
           "description": "Целый день в культурном сердце Бали: рисовые террасы Тегалаланг, лес обезьян, храм Сарасвати и водопад Тегенунган. Гид покажет места, которые обычно пропускают туристы.",
           "itinerary": [
             "08:00 — Забираем из отеля",
             "09:30 — Рисовые террасы Тегалаланг",
-            "12:00 — Обед в Убуде",
+            "12:00 — Обед в Убуде (за свой счёт)",
             "13:30 — Лес обезьян и храм Сарасвати",
             "16:00 — Водопад Тегенунган"
           ]
@@ -156,14 +162,15 @@ export const seed = {
           "includes": [
             "Kelingking & Angel's Billabong",
             "Snorkeling di Crystal Bay",
-            "Fast boat pulang-pergi"
+            "Fast boat pulang-pergi",
+            "Tiket masuk, parkir & air mineral"
           ],
           "description": "Sehari penuh di pulau paling dramatis dekat Bali: tebing Kelingking, Broken Beach, Angel's Billabong, dan snorkeling di Crystal Bay. Termasuk fast boat serta mobil dengan driver di pulau.",
           "itinerary": [
             "06.30 — Jemput di hotel, menuju Sanur",
             "08.00 — Fast boat ke Nusa Penida",
             "09.30 — Kelingking & Broken Beach",
-            "12.00 — Makan siang lokal",
+            "12.00 — Makan siang lokal (bayar sendiri)",
             "13.30 — Snorkeling di Crystal Bay",
             "17.00 — Kembali ke Bali"
           ]
@@ -174,14 +181,15 @@ export const seed = {
           "includes": [
             "Kelingking & Angel's Billabong",
             "Snorkelling at Crystal Bay",
-            "Return fast boat"
+            "Return fast boat",
+            "Entrance tickets, parking & bottled water"
           ],
           "description": "A full day on the most dramatic island near Bali: Kelingking cliff, Broken Beach, Angel's Billabong and snorkelling at Crystal Bay. Fast boat and a private car with driver on the island included.",
           "itinerary": [
             "06:30 — Hotel pickup, drive to Sanur",
             "08:00 — Fast boat to Nusa Penida",
             "09:30 — Kelingking & Broken Beach",
-            "12:00 — Local lunch",
+            "12:00 — Local lunch (own cost)",
             "13:30 — Snorkelling at Crystal Bay",
             "17:00 — Return to Bali"
           ]
@@ -192,14 +200,15 @@ export const seed = {
           "includes": [
             "Kelingking & Angel's Billabong",
             "Schnorcheln in der Crystal Bay",
-            "Schnellboot hin und zurück"
+            "Schnellboot hin und zurück",
+            "Eintritte, Parken & Wasser"
           ],
           "description": "Ein ganzer Tag auf der spektakulärsten Insel nahe Bali: Kelingking-Klippe, Broken Beach, Angel's Billabong und Schnorcheln in der Crystal Bay. Schnellboot und Auto mit Fahrer auf der Insel inklusive.",
           "itinerary": [
             "06:30 — Abholung, Fahrt nach Sanur",
             "08:00 — Schnellboot nach Nusa Penida",
             "09:30 — Kelingking & Broken Beach",
-            "12:00 — Lokales Mittagessen",
+            "12:00 — Lokales Mittagessen (auf eigene Kosten)",
             "13:30 — Schnorcheln in der Crystal Bay",
             "17:00 — Zurück nach Bali"
           ]
@@ -210,14 +219,15 @@ export const seed = {
           "includes": [
             "Kelingking & Angel's Billabong",
             "Snorkeling à Crystal Bay",
-            "Bateau rapide aller-retour"
+            "Bateau rapide aller-retour",
+            "Billets d'entrée, parking & eau"
           ],
           "description": "Une journée entière sur l'île la plus spectaculaire près de Bali : falaise de Kelingking, Broken Beach, Angel's Billabong et snorkeling à Crystal Bay. Bateau rapide et voiture avec chauffeur inclus.",
           "itinerary": [
             "06h30 — Prise en charge, route vers Sanur",
             "08h00 — Bateau rapide vers Nusa Penida",
             "09h30 — Kelingking & Broken Beach",
-            "12h00 — Déjeuner local",
+            "12h00 — Déjeuner local (à vos frais)",
             "13h30 — Snorkeling à Crystal Bay",
             "17h00 — Retour à Bali"
           ]
@@ -228,14 +238,15 @@ export const seed = {
           "includes": [
             "Kelingking & Angel's Billabong",
             "Esnórquel en Crystal Bay",
-            "Lancha rápida ida y vuelta"
+            "Lancha rápida ida y vuelta",
+            "Entradas, aparcamiento y agua"
           ],
           "description": "Un día completo en la isla más espectacular cerca de Bali: acantilado de Kelingking, Broken Beach, Angel's Billabong y esnórquel en Crystal Bay. Lancha rápida y coche con conductor incluidos.",
           "itinerary": [
             "06:30 — Recogida y traslado a Sanur",
             "08:00 — Lancha rápida a Nusa Penida",
             "09:30 — Kelingking y Broken Beach",
-            "12:00 — Almuerzo local",
+            "12:00 — Almuerzo local (por tu cuenta)",
             "13:30 — Esnórquel en Crystal Bay",
             "17:00 — Regreso a Bali"
           ]
@@ -246,14 +257,15 @@ export const seed = {
           "includes": [
             "Келинкинг и Angel's Billabong",
             "Снорклинг в Кристал-Бэй",
-            "Скоростной катер туда и обратно"
+            "Скоростной катер туда и обратно",
+            "Билеты, парковка и вода"
           ],
           "description": "Целый день на самом впечатляющем острове рядом с Бали: скала Келинкинг, Broken Beach, Angel's Billabong и снорклинг в Кристал-Бэй. Скоростной катер и машина с водителем включены.",
           "itinerary": [
             "06:30 — Забираем из отеля, едем в Санур",
             "08:00 — Катер на Нуса-Пениду",
             "09:30 — Келинкинг и Broken Beach",
-            "12:00 — Обед в местном кафе",
+            "12:00 — Обед в местном кафе (за свой счёт)",
             "13:30 — Снорклинг в Кристал-Бэй",
             "17:00 — Возвращение на Бали"
           ]
@@ -276,7 +288,8 @@ export const seed = {
           "includes": [
             "Trekking 04.00 ke puncak",
             "Sarapan di tepi kawah",
-            "Pemandu trekking bersertifikat"
+            "Pemandu trekking bersertifikat",
+            "Tiket masuk, parkir & air mineral"
           ],
           "description": "Trekking malam ke puncak Gunung Batur untuk mengejar matahari terbit di atas lautan awan, lanjut sarapan di tepi kawah dan berendam di air panas alami.",
           "itinerary": [
@@ -293,7 +306,8 @@ export const seed = {
           "includes": [
             "04:00 summit trek",
             "Breakfast on the crater rim",
-            "Certified trekking guide"
+            "Certified trekking guide",
+            "Entrance tickets, parking & bottled water"
           ],
           "description": "A night trek to the summit of Mount Batur to catch sunrise above a sea of clouds, then breakfast on the crater rim and a soak in natural hot springs.",
           "itinerary": [
@@ -310,7 +324,8 @@ export const seed = {
           "includes": [
             "Aufstieg um 04:00",
             "Frühstück am Kraterrand",
-            "Zertifizierter Trekking-Guide"
+            "Zertifizierter Trekking-Guide",
+            "Eintritte, Parken & Wasser"
           ],
           "description": "Nächtliche Wanderung auf den Gipfel des Batur zum Sonnenaufgang über dem Wolkenmeer, danach Frühstück am Kraterrand und Baden in heißen Quellen.",
           "itinerary": [
@@ -327,7 +342,8 @@ export const seed = {
           "includes": [
             "Montée à 4 h du matin",
             "Petit-déjeuner au bord du cratère",
-            "Guide de trekking agréé"
+            "Guide de trekking agréé",
+            "Billets d'entrée, parking & eau"
           ],
           "description": "Ascension nocturne au sommet du mont Batur pour le lever du soleil au-dessus des nuages, puis petit-déjeuner sur le cratère et bain dans les sources chaudes.",
           "itinerary": [
@@ -344,7 +360,8 @@ export const seed = {
           "includes": [
             "Ascenso a las 04:00",
             "Desayuno en el borde del cráter",
-            "Guía de trekking certificado"
+            "Guía de trekking certificado",
+            "Entradas, aparcamiento y agua"
           ],
           "description": "Ascenso nocturno a la cima del monte Batur para ver el amanecer sobre un mar de nubes, después desayuno en el cráter y baño en aguas termales.",
           "itinerary": [
@@ -361,7 +378,8 @@ export const seed = {
           "includes": [
             "Подъём в 04:00",
             "Завтрак на краю кратера",
-            "Сертифицированный гид"
+            "Сертифицированный гид",
+            "Билеты, парковка и вода"
           ],
           "description": "Ночной подъём на вершину Батура ради рассвета над морем облаков, затем завтрак на краю кратера и купание в горячих источниках.",
           "itinerary": [
@@ -390,7 +408,8 @@ export const seed = {
           "includes": [
             "Pura Uluwatu & tari Kecak",
             "Sunset di Tanah Lot",
-            "Makan malam seafood Jimbaran"
+            "Makan malam seafood Jimbaran",
+            "Tiket masuk, parkir & air mineral"
           ],
           "description": "Dua pura ikonik di selatan Bali: Uluwatu dengan tari Kecak saat senja, lalu Tanah Lot yang berdiri di atas karang. Ditutup makan malam seafood di Jimbaran.",
           "itinerary": [
@@ -407,7 +426,8 @@ export const seed = {
           "includes": [
             "Uluwatu Temple & Kecak dance",
             "Sunset at Tanah Lot",
-            "Seafood dinner in Jimbaran"
+            "Seafood dinner in Jimbaran",
+            "Entrance tickets, parking & bottled water"
           ],
           "description": "Two iconic temples in south Bali: Uluwatu with the Kecak dance at dusk, then Tanah Lot standing on its rock. The day ends with a seafood dinner on Jimbaran beach.",
           "itinerary": [
@@ -424,7 +444,8 @@ export const seed = {
           "includes": [
             "Uluwatu-Tempel & Kecak-Tanz",
             "Sonnenuntergang in Tanah Lot",
-            "Meeresfrüchte-Dinner in Jimbaran"
+            "Meeresfrüchte-Dinner in Jimbaran",
+            "Eintritte, Parken & Wasser"
           ],
           "description": "Zwei ikonische Tempel im Süden Balis: Uluwatu mit Kecak-Tanz in der Dämmerung, danach Tanah Lot auf seinem Felsen. Zum Abschluss Meeresfrüchte-Dinner in Jimbaran.",
           "itinerary": [
@@ -441,7 +462,8 @@ export const seed = {
           "includes": [
             "Temple d'Uluwatu & danse Kecak",
             "Coucher de soleil à Tanah Lot",
-            "Dîner de fruits de mer à Jimbaran"
+            "Dîner de fruits de mer à Jimbaran",
+            "Billets d'entrée, parking & eau"
           ],
           "description": "Deux temples emblématiques du sud de Bali : Uluwatu et sa danse Kecak au crépuscule, puis Tanah Lot posé sur son rocher. La journée finit par un dîner de fruits de mer à Jimbaran.",
           "itinerary": [
@@ -458,7 +480,8 @@ export const seed = {
           "includes": [
             "Templo de Uluwatu & danza Kecak",
             "Atardecer en Tanah Lot",
-            "Cena de mariscos en Jimbaran"
+            "Cena de mariscos en Jimbaran",
+            "Entradas, aparcamiento y agua"
           ],
           "description": "Dos templos icónicos del sur de Bali: Uluwatu con la danza Kecak al atardecer y después Tanah Lot sobre su roca. Termina con cena de mariscos en Jimbaran.",
           "itinerary": [
@@ -475,7 +498,8 @@ export const seed = {
           "includes": [
             "Храм Улувату и танец кечак",
             "Закат в Танах-Лот",
-            "Ужин из морепродуктов в Джимбаране"
+            "Ужин из морепродуктов в Джимбаране",
+            "Билеты, парковка и вода"
           ],
           "description": "Два знаковых храма на юге Бали: Улувату с танцем кечак в сумерках и Танах-Лот на скале. Завершаем ужином из морепродуктов в Джимбаране.",
           "itinerary": [
@@ -503,8 +527,8 @@ export const seed = {
           "tagline": "Arus sungai, lumpur, dan tawa — versi Bali yang lebih liar.",
           "includes": [
             "Rafting 11 km sungai Ayung",
-            "ATV menembus hutan",
-            "Makan siang & locker"
+            "ATV + helm & pelampung",
+            "Makan siang, locker & asuransi"
           ],
           "description": "Arungi 11 km jeram Sungai Ayung melewati ngarai hijau, lalu jelajahi hutan dengan ATV. Untuk yang ingin merasakan Bali versi lebih liar.",
           "itinerary": [
@@ -520,8 +544,8 @@ export const seed = {
           "tagline": "River rapids, mud, and laughter — Bali's wilder side.",
           "includes": [
             "11 km Ayung river rafting",
-            "Jungle ATV ride",
-            "Lunch & lockers"
+            "Jungle ATV + helmet & life jacket",
+            "Lunch, lockers & insurance"
           ],
           "description": "Ride 11 km of rapids down the Ayung river through a green gorge, then explore the jungle by ATV. For travellers who want the wilder side of Bali.",
           "itinerary": [
@@ -537,8 +561,8 @@ export const seed = {
           "tagline": "Strömung, Schlamm und Lachen — Balis wilde Seite.",
           "includes": [
             "11 km Rafting auf dem Ayung",
-            "ATV-Tour durch den Dschungel",
-            "Mittagessen & Schließfächer"
+            "ATV + Helm & Schwimmweste",
+            "Mittagessen, Schließfächer & Versicherung"
           ],
           "description": "11 km Wildwasser auf dem Ayung durch eine grüne Schlucht, danach Dschungeltour mit dem ATV. Für alle, die Bali wilder erleben wollen.",
           "itinerary": [
@@ -554,8 +578,8 @@ export const seed = {
           "tagline": "Courant, boue et rires — le Bali sauvage.",
           "includes": [
             "11 km de rafting sur l'Ayung",
-            "Balade en ATV dans la jungle",
-            "Déjeuner & casiers"
+            "ATV + casque & gilet",
+            "Déjeuner, casiers & assurance"
           ],
           "description": "11 km de rapides sur la rivière Ayung à travers une gorge verdoyante, puis balade en ATV dans la jungle. Pour ceux qui veulent un Bali plus sauvage.",
           "itinerary": [
@@ -571,8 +595,8 @@ export const seed = {
           "tagline": "Corriente, barro y risas: el lado salvaje de Bali.",
           "includes": [
             "11 km de rafting en el Ayung",
-            "Ruta en ATV por la selva",
-            "Almuerzo & taquillas"
+            "ATV + casco y chaleco",
+            "Almuerzo, taquillas y seguro"
           ],
           "description": "11 km de rápidos por el río Ayung entre cañones verdes y después una ruta en ATV por la selva. Para quien busca el lado más salvaje de Bali.",
           "itinerary": [
@@ -588,8 +612,8 @@ export const seed = {
           "tagline": "Течение, грязь и смех — дикая сторона Бали.",
           "includes": [
             "11 км рафтинга по Аюнг",
-            "Квадроциклы по джунглям",
-            "Обед и камеры хранения"
+            "Квадроциклы + шлем и спасжилет",
+            "Обед, камеры хранения и страховка"
           ],
           "description": "11 км порогов по реке Аюнг через зелёное ущелье, затем поездка по джунглям на квадроциклах. Для тех, кто хочет увидеть Бали диким.",
           "itinerary": [
@@ -618,7 +642,8 @@ export const seed = {
           "includes": [
             "Gerbang Lempuyang",
             "Tirta Gangga & Amed",
-            "Pantai Virgin"
+            "Pantai Virgin",
+            "Tiket masuk, parkir & air mineral"
           ],
           "description": "Rute foto paling dicari di timur Bali: Gerbang Lempuyang, Tirta Gangga, dan Amed. Berangkat pagi supaya antrean masih pendek dan cahaya masih bagus.",
           "itinerary": [
@@ -626,7 +651,7 @@ export const seed = {
             "06.30 — Gerbang Lempuyang",
             "09.00 — Tirta Gangga",
             "11.30 — Amed & Virgin Beach",
-            "14.00 — Makan siang lokal"
+            "14.00 — Makan siang lokal (bayar sendiri)"
           ]
         },
         "en": {
@@ -635,7 +660,8 @@ export const seed = {
           "includes": [
             "Lempuyang Gate of Heaven",
             "Tirta Gangga & Amed",
-            "Virgin Beach"
+            "Virgin Beach",
+            "Entrance tickets, parking & bottled water"
           ],
           "description": "The most photographed route in east Bali: Lempuyang's Gate of Heaven, Tirta Gangga water palace and Amed. We leave early, so queues are short and the light is good.",
           "itinerary": [
@@ -643,7 +669,7 @@ export const seed = {
             "06:30 — Lempuyang Gate of Heaven",
             "09:00 — Tirta Gangga water palace",
             "11:30 — Amed & Virgin Beach",
-            "14:00 — Local lunch"
+            "14:00 — Local lunch (own cost)"
           ]
         },
         "de": {
@@ -652,7 +678,8 @@ export const seed = {
           "includes": [
             "Lempuyang Himmelstor",
             "Tirta Gangga & Amed",
-            "Virgin Beach"
+            "Virgin Beach",
+            "Eintritte, Parken & Wasser"
           ],
           "description": "Die meistfotografierte Route im Osten Balis: Himmelstor Lempuyang, Wasserpalast Tirta Gangga und Amed. Wir starten früh — kurze Schlangen, gutes Licht.",
           "itinerary": [
@@ -660,7 +687,7 @@ export const seed = {
             "06:30 — Himmelstor Lempuyang",
             "09:00 — Wasserpalast Tirta Gangga",
             "11:30 — Amed & Virgin Beach",
-            "14:00 — Lokales Mittagessen"
+            "14:00 — Lokales Mittagessen (auf eigene Kosten)"
           ]
         },
         "fr": {
@@ -669,7 +696,8 @@ export const seed = {
           "includes": [
             "Porte du paradis de Lempuyang",
             "Tirta Gangga & Amed",
-            "Virgin Beach"
+            "Virgin Beach",
+            "Billets d'entrée, parking & eau"
           ],
           "description": "L'itinéraire le plus photographié de l'est de Bali : porte du paradis de Lempuyang, palais d'eau de Tirta Gangga et Amed. Départ tôt pour éviter la foule et profiter de la lumière.",
           "itinerary": [
@@ -677,7 +705,7 @@ export const seed = {
             "06h30 — Porte du paradis de Lempuyang",
             "09h00 — Palais d'eau de Tirta Gangga",
             "11h30 — Amed & Virgin Beach",
-            "14h00 — Déjeuner local"
+            "14h00 — Déjeuner local (à vos frais)"
           ]
         },
         "es": {
@@ -686,7 +714,8 @@ export const seed = {
           "includes": [
             "Puerta del Cielo de Lempuyang",
             "Tirta Gangga & Amed",
-            "Virgin Beach"
+            "Virgin Beach",
+            "Entradas, aparcamiento y agua"
           ],
           "description": "La ruta más fotografiada del este de Bali: Puerta del Cielo de Lempuyang, palacio del agua Tirta Gangga y Amed. Salimos temprano para evitar colas y aprovechar la luz.",
           "itinerary": [
@@ -694,7 +723,7 @@ export const seed = {
             "06:30 — Puerta del Cielo de Lempuyang",
             "09:00 — Palacio del agua Tirta Gangga",
             "11:30 — Amed y Virgin Beach",
-            "14:00 — Almuerzo local"
+            "14:00 — Almuerzo local (por tu cuenta)"
           ]
         },
         "ru": {
@@ -703,7 +732,8 @@ export const seed = {
           "includes": [
             "Небесные врата Лемпуянг",
             "Тирта-Гангга и Амед",
-            "Пляж Вирджин"
+            "Пляж Вирджин",
+            "Билеты, парковка и вода"
           ],
           "description": "Самый фотографируемый маршрут восточного Бали: Небесные врата Лемпуянг, водный дворец Тирта-Гангга и Амед. Выезжаем рано — меньше очередей и лучше свет.",
           "itinerary": [
@@ -711,7 +741,7 @@ export const seed = {
             "06:30 — Небесные врата Лемпуянг",
             "09:00 — Водный дворец Тирта-Гангга",
             "11:30 — Амед и пляж Вирджин",
-            "14:00 — Обед в местном кафе"
+            "14:00 — Обед в местном кафе (за свой счёт)"
           ]
         }
       }
